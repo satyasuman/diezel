@@ -2,35 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ericaro</groupId>
-	<artifactId>diezel</artifactId>
+	<artifactId>diezel-core</artifactId>
 	<name>Diezel Parser Generator for Java</name>
 	<version>1.0.0-SNAPSHOT</version>
 	<description>An Embedded Domain Specific Language Parser Generator</description>
-	<url>http://neoevents.googlecode.com/</url>
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
-	<scm>
-		<connection>scm:svn:http://diezel.googlecode.com/svn/trunk/core</connection>
-		<developerConnection>scm:svn:https://diezel.googlecode.com/svn/trunk/core</developerConnection>
-		<url>http://diezel.googlecode.com/svn/trunk/core</url>
-	</scm>
-	<developers>
-	<developer>
-	<name>ericaro</name>
-	<email>eric@ericaro.net</email>
-	<organization>Personal</organization>
-	<roles><role>Owner</role></roles>
-	
-	</developer>
-	</developers>
-	<!--
-        maven central declaration
-    -->
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -40,6 +15,53 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<properties>
+		<googlecode>diezel</googlecode>
+		<subname>core</subname>
+	</properties>
+
+	<!-- MAVEN STUFF -->
+	<url>http://${googlecode}.googlecode.com/</url>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:svn:http://${googlecode}.googlecode.com/svn/trunk/${subname}</connection>
+		<developerConnection>scm:svn:https://${googlecode}.googlecode.com/svn/trunk/${subname}</developerConnection>
+		<url>http://${googlecode}.googlecode.com/svn/trunk/${subname}</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>ericaro</name>
+			<email>eric@ericaro.net</email>
+			<organization>Personal</organization>
+			<roles>
+				<role>Owner</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<!-- BUILD STUFF -->
+
 	<build>
 		<plugins>
 			<plugin>
@@ -86,7 +108,7 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<configuration>
 
-						<tagBase>https://diezel.googlecode.com/svn/tags</tagBase>
+						<tagBase>https://${googlecode}.googlecode.com/svn/tags</tagBase>
 						<useReleaseProfile>false</useReleaseProfile>
 						<preparationGoals>clean install</preparationGoals>
 						<goals>deploy</goals>
@@ -123,17 +145,8 @@
 	</build>
 
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<name>Sonatype Nexus Snapshots</name>
-			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>sonatype-nexus-staging</id>
-			<name>Nexus Release Repository</name>
-			<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+
+
+
 </project>
 
