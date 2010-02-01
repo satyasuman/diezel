@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.ericaro.diezel.core.Parser;
+import net.ericaro.diezel.core.FlowManager;
 import net.ericaro.diezel.core.Transition;
 
 public class MethodGen extends Gen {

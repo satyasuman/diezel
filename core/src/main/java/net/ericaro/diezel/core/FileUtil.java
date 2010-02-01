@@ -7,11 +7,10 @@ import java.io.OutputStreamWriter;
 
 public class FileUtil {
 
-	public static void copy(File file, String content, boolean close)
+	public static void printFile(File file, String content, boolean close)
 			throws IOException {
 		file.getParentFile().mkdirs();
-		System.out.println(file);
-		System.out.println(content);
+		System.out.println("DIEZEL is generating "+file);
 		OutputStreamWriter w = new OutputStreamWriter(
 				new FileOutputStream(file));
 		w.write(content);

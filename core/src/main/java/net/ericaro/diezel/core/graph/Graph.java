@@ -1,29 +1,37 @@
 package net.ericaro.diezel.core.graph;
 
-import java.util.ArrayDeque;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.ericaro.diezel.core.State;
-import net.ericaro.diezel.core.Transition;
+import net.ericaro.diezel.core.FileUtil;
 
 /**
- * @author Eric.Atienza
+ * Graph manages a graph of T (edge that "handle" a Transition object) and S
+ * (nodes that handle a State Object).
  * 
+ * It provides some basic operation, to make it possible to have a BNF
+ * definition of a workflow. Handled object are moved during graph operations.
+ * At the end we provide a way to generate
+ * 
+ * @author eric
+ * 
+ *@TODO need cleaning/commenting
  */
-public class Graph {
+public class Graph<State,Transition> {
 	static int ids = 0;
 
-	public static class S {
+	public static class S<State,Transition> {
 		int id;
-		State state;
-		List<T> ins = new ArrayList<T>();
-		List<T> outs = new ArrayList<T>();
+		public State state;
+		List<T<State,Transition>> ins = new ArrayList<T<State,Transition>>();
+		public List<T<State,Transition>> outs = new ArrayList<T<State,Transition>>();
 
 		public S() {
 			id = ++ids;
@@ -39,15 +47,19 @@ public class Graph {
 			return "S" + id;
 		}
 
+		public String toString() {
+			return ref();
+		}
+
 	}
 
-	public static class T {
-		S in;
-		S out;
+	public static class T<State,Transition> {
+		S<State,Transition> in;
+		public S<State,Transition> out;
 		int id;
-		State symbolic = null;
-		Transition transition;
-		boolean implicit = true;
+		public String name;
+		public Transition transition;
+		public boolean implicit = true;
 
 		public T() {
 			id = ++ids;
@@ -57,45 +69,58 @@ public class Graph {
 			StringBuilder sb = new StringBuilder();
 			sb.append(in.ref()).append(" -> ").append(out.ref()).append("[")
 					.append("label=\"").append(
-							implicit ? (symbolic != null ? "!" : "*")
-									: transition).append("\"").append("]");// .;
+							implicit ? "*"
+									: (transition==null?name:transition) ).append("\"").append("]");// .;
 			return sb.toString();
 		}
 
-		public boolean isTerminal() {
-			return symbolic == null;
+		
+
+		public String toString() {
+			return toEdge();
 		}
 	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph {\n");
-		for (S s : states) {
+		for (S<State,Transition> s : states) {
 			String shape = "circle"; // "box" "circle"
 			if (s == in || s == out)
 				shape = "point";
 			sb.append(s.toNode(shape)).append(";\n");
 		}
-		for (T t : transitions)
+		for (T<State,Transition> t : transitions)
 			sb.append(t.toEdge()).append(";\n");
 		sb.append("}\n");
 
 		return sb.toString();
 	}
 
-	Set<T> transitions = new HashSet<T>();
-	Set<S> states = new HashSet<S>();
-	S in;
-	S out;
+	public Set<T<State,Transition>> transitions = new HashSet<T<State,Transition>>();
+	public Set<S<State,Transition>> states = new HashSet<S<State,Transition>>();
+	S<State,Transition> in;
+	S<State,Transition> out;
 	State state;
+	int id;
 
-	public Graph clone() {
-		Graph g = new Graph();
+	public Graph()
+	{
+		this.id = ++ids;
+	}
+	@Override
+	public int hashCode() {
+		return id;
+	}
+
+
+	public Graph<State,Transition> clone() {
+		Graph<State,Transition> g = new Graph<State,Transition>();
 		g.state = state;
-		Map<S, S> old2new = new HashMap<S, S>();
-		for (S s : states)
+		Map<S<State,Transition>, S<State,Transition>> old2new = new HashMap<S<State,Transition>, S<State,Transition>>();
+		for (S<State,Transition> s : states)
 			g.clone(s, old2new);
-		for (T t : transitions)
+		for (T<State,Transition> t : transitions)
 			g.clone(t, old2new);
 
 		g.in = g.clone(in, old2new);
@@ -103,21 +128,20 @@ public class Graph {
 		return g;
 	}
 
-	public S newS() {
-		S s = new S();
+	public S<State,Transition> newS() {
+		S<State,Transition> s = new S<State,Transition>();
 		states.add(s);
 		return s;
 	}
 
-	public T newT() {
-		T t = new T();
+	public T<State,Transition> newT() {
+		T<State,Transition> t = new T<State,Transition>();
 		transitions.add(t);
 		return t;
 	}
 
-	public T connect(S in,
-			S out) {
-		T t = newT();
+	public T<State,Transition> connect(S<State,Transition> in, S<State,Transition> out) {
+		T<State,Transition> t = newT();
 		t.in = in;
 		t.out = out;
 		in.outs.add(t);
@@ -125,10 +149,9 @@ public class Graph {
 		return t;
 	}
 
-	private S clone(S s,
-			Map<S, S> old2new) {
+	private S<State,Transition> clone(S<State,Transition> s, Map<S<State,Transition>, S<State,Transition>> old2new) {
 		if (!old2new.containsKey(s)) {
-			S s2 = newS();
+			S<State,Transition> s2 = newS();
 			old2new.put(s, s2);
 			s2.state = s.state;
 		}
@@ -136,21 +159,19 @@ public class Graph {
 
 	}
 
-	private T clone(T t,
-			Map<S, S> old2new) {
-		T t2 = connect(clone(t.in, old2new), clone(t.out,
-				old2new));
+	private T<State,Transition> clone(T<State,Transition> t, Map<S<State,Transition>, S<State,Transition>> old2new) {
+		T<State,Transition> t2 = connect(clone(t.in, old2new), clone(t.out, old2new));
 		t2.implicit = t.implicit;
-		t2.symbolic = t.symbolic;
 		t2.transition = t.transition;
+		t2.name= t.name;
 		return t;
 	}
 
-	private void remove(S s) {
-		for (T t : s.ins)
+	private void remove(S<State,Transition> s) {
+		for (T<State,Transition> t : s.ins)
 			if (t.out == s)
 				t.out = null;
-		for (T t : s.outs)
+		for (T<State,Transition> t : s.outs)
 			if (t.in == s)
 				t.in = null;
 		states.remove(s);
@@ -160,18 +181,19 @@ public class Graph {
 			out = null;
 	}
 
-	public void remove(T t) {
-		S in = t.in;
-		S out = t.out;
+	public void remove(T<State,Transition> t) {
+		S<State,Transition> in = t.in;
+		S<State,Transition> out = t.out;
 		in.outs.remove(t);
 		out.ins.remove(t);
 		transitions.remove(t);
 	}
 
-	public void shortcut(T t) {
-		S in = t.in;
-		S out = t.out;
-
+	
+	public void shortcut(T<State,Transition> t) {
+		S<State,Transition> in = t.in;
+		S<State,Transition> out = t.out;
+		
 		assert in.outs.size() == 1 || out.ins.size() == 1 : "cannot simplify graph using a Transition that is not a singleton";
 		assert t.implicit : "cannot simplify graph using a Transition that is not implicit";
 		// simple remove
@@ -179,7 +201,7 @@ public class Graph {
 
 		if (in.outs.size() == 0) { // remove in
 			out.ins.addAll(in.ins);// copy all incoming
-			for (T u : in.ins)
+			for (T<State,Transition> u : in.ins)
 				u.out = out;// and move their target to out
 			in.ins.clear();
 			if (this.in == in)
@@ -191,7 +213,8 @@ public class Graph {
 		} else {
 			assert (out.ins.size() == 0) : "There is a problem with the extremity nodes.";
 			in.outs.addAll(out.outs);// copy all outgoing
-			for (T u : out.outs)// move transition
+			for (T<State,Transition> u : out.outs)
+				// move transition
 				u.in = in;// and move their source to in
 			out.outs.clear();
 			if (this.in == out)
@@ -204,62 +227,14 @@ public class Graph {
 
 	}
 
-	public void addAll(Graph g) {
+	public void addAll(Graph<State,Transition> g) {
 		states.addAll(g.states);
 		transitions.addAll(g.transitions);
 	}
 
-	/**
-	 * Substitute all symbolic links. assume that the dependency (through links)
-	 * HAS NO LOOP. This will only generate a static grammar. it's hard for ebnf
-	 * to do otherwise. Try splitting you graph into several static ebnf.
-	 * 
-	 * @param graphs
-	 * @return
-	 */
-	public static  boolean substituteAll(
-			Graph... graphs) {
+	
 
-		// splits the graphs into three sets.
-		// the one with terminal elements not substituted: non_subs
-		// the one with terminal element substituted : subs
-		// the one with non terminal element : non_terms
-		/*
-		 * ALG : the alg is straigforward while non_subs is not empty:
-		 * term<-poll a non substituted element for non_term in non_terms:
-		 * subs(term, non_term) if non_term is terminal: mv non_term from
-		 * non_terms to non_subs
-		 * 
-		 * non_terms should be empty. if not the case, it's impossible to
-		 * generate a "static" grammar.
-		 */
-		Set<Graph> non_terms = new HashSet<Graph>();
-		Deque<Graph> non_subs = new ArrayDeque<Graph>();
-		Set<Graph> subs = new HashSet<Graph>();
-
-		// fill the sets
-		for (Graph g : graphs)
-			if (g.isTerminal())
-				non_subs.add(g);
-			else
-				non_terms.add(g);
-
-		while (!non_subs.isEmpty()) {
-			Graph term = non_subs.poll();
-			subs.add(term);
-			for (Graph non_term : non_terms) {
-				substitute(term, non_term);
-				if (term.isTerminal()) {
-					non_terms.remove(non_term);
-					non_subs.push(non_term);
-				}
-			}
-		}
-		// no check is done with non-terms to be empty, because we "hope" that
-		// we still can make something out of it
-		return non_terms.isEmpty();
-
-	}
+	
 
 	/**
 	 * Remove all possible implicit links
@@ -269,134 +244,148 @@ public class Graph {
 	 * @param term
 	 * @param g
 	 */
-	public static  void reduce(Graph g) {
+	public void reduce() {
 
-		Set<T> shortcutable = new HashSet<T>();
-		for (T t : g.transitions)
-			if (t.implicit && (t.in.outs.size() == 1 || t.out.ins.size() == 1))
+		Set<T<State,Transition>> shortcutable = new HashSet<T<State,Transition>>();
+		for (T<State,Transition> t : transitions)
+			if (t.implicit && (t.in.outs.size() == 1 || t.out.ins.size() == 1 ))
 				shortcutable.add(t);
-		for (T t : shortcutable)
-			g.shortcut(t);
-	}
-
-	private static  void substitute(
-			Graph term, Graph g) {
-		/*
-		 * ALG for each symbolic transition that match the name: substitute a
-		 * graph to a T
-		 */
-		Set<T> symb_trans = new HashSet<T>();
-		for (T t : g.transitions)
-			if (term.state.equals(t.symbolic))
-				symb_trans.add(t);
-		for (T t : symb_trans)
-			substitute(term, g, t);
-
-	}
-
-	private static  void substitute(
-			Graph term, Graph g,
-			T t) {
-		/*
-		 * ALG
-		 */
-		g.remove(t);
-		term = term.clone();
-		g.addAll(term);
-		T ts1 = g.connect(t.in, term.in);
-		T ts2 = g.connect(term.out, t.out);
-		g.shortcut(ts2);
-		g.shortcut(ts1);
-
-	}
-
-	private boolean isTerminal() {
-		for (T t : transitions)
-			if (!t.isTerminal())
-				return false;
-		return true;
-	}
-
-	public static class BNF {
-
-		Map<State, Graph> definitions = new HashMap<State, Graph>();
-
-		// bnfop
-		public Graph opt(Graph g) {
-			// simply add a null link between in and out
-			g.connect(g.in, g.out);
-			return g;
-		}
-
-		public Graph seq(Graph... graphs) {
-			Graph g = new Graph();
-			int last = graphs.length - 1;
-			T[] ts = new T[last];
-			for (int i = 0; i < graphs.length; i++)
-				g.addAll(graphs[i]);
-			g.in = graphs[0].in;
-			g.out = graphs[last].out;
-
-			for (int i = 0; i < last; i++)
-				ts[i] = g.connect(graphs[i].out, graphs[i + 1].in);
-
-			for (int i = 0; i < last; i++)
-				g.shortcut(ts[i]);
-			return g;
-		}
-
-		public Graph iter(Graph g) {
-			// simply add a null link between in and out
-			g.connect(g.in, g.out);
-			g.connect(g.out, g.in); // removing this line forces a ()+
-			return g;
-		}
-
-		public Graph sel(Graph... graphs) {
-			Graph g = new Graph();
-			g.in = g.newS();
-			g.out = g.newS();
-			for (int i = 0; i < graphs.length; i++) {
-				g.addAll(graphs[i]);
-				g.connect(g.in, graphs[i].in);
-				g.connect(graphs[i].out, g.out);
-			}
-			return g;
-		}
-
-		public Graph ch(Transition transition) {
-			Graph g = new Graph();
-			g.in = g.newS();
-			g.out = g.newS();
-			T t = g.connect(g.in, g.out);
-			t.transition = transition;
-			t.implicit = false;
-			return g;
-		}
-
-		public Graph lhs(State state) {
-			if (!definitions.containsKey(state)) {
-				// creates an empty graph with a symbolic name
-				Graph g = new Graph();
-				definitions.put(state, g);
-
-				g.in = g.newS();
-				g.out = g.newS();
-				T t = g.connect(g.in, g.out);
-				t.symbolic = state;
-			}
-			return definitions.get(state).clone();
-
-		}
-
-		public BNF rule(State state,
-				Graph graph) {
-			definitions.put(state, graph);
-			graph.state = state;
-			return this;
-		}
-
+		for (T<State,Transition> t : shortcutable)
+			shortcut(t);
 	}
 
 	
+
+	
+
+	
+
+	public static <State,Transition> Graph<State,Transition> opt(Graph<State,Transition> g) {
+		// simply add a null link between in and out
+		g.connect(g.in, g.out);
+		return g;
+	}
+
+	public static <State,Transition> Graph<State,Transition> seq(Graph<State,Transition>... graphs) {
+		if( graphs.length==1) return graphs[0];
+		Graph<State,Transition> g = new Graph<State,Transition>();
+		int last = graphs.length - 1;
+		T<State,Transition>[] ts = new T[last];
+		for (int i = 0; i < graphs.length; i++)
+			g.addAll(graphs[i]);
+		g.in = graphs[0].in;
+		g.out = graphs[last].out;
+
+		for (int i = 0; i < last; i++)
+			ts[i] = g.connect(graphs[i].out, graphs[i + 1].in);
+		/*
+		for (int i = 0; i < last; i++)
+			g.shortcut(ts[i]);/**/
+		return g;
+	}
+	
+	
+	
+	
+
+	public static <State,Transition> Graph<State,Transition> iter(Graph<State,Transition> g) {
+		// simply add a null link between in and out
+		g.connect(g.in, g.out);		// removing this line forces a ()+
+		g.connect(g.out, g.in);
+		return g;
+	}
+	public static <State,Transition> Graph<State,Transition> iter_once(Graph<State,Transition> g) {
+		// simply add a null link between in and out
+		g.connect(g.out, g.in);
+		return g;
+	}
+
+	public static <State,Transition> Graph<State,Transition> sel(Graph<State,Transition>... graphs) {
+		if( graphs.length==1) return graphs[0];
+		Graph<State,Transition> g = new Graph<State,Transition>( );
+		g.in = g.newS();
+		g.out = g.newS();
+		for (int i = 0; i < graphs.length; i++) {
+			g.addAll(graphs[i]);
+			g.connect(g.in, graphs[i].in);
+			g.connect(graphs[i].out, g.out);
+		}
+		return g;
+	}
+	
+	/** A bang is explosive, use with care, propose a choice of graphs, and, then a choice of the same graphs minus the one just made.
+	 * it means that it forces the user to pass through all the transitions of the bang, but in the order it wants. 
+	 * 
+	 * @param result
+	 * @return
+	 */
+	public static <State,Transition> Graph<State,Transition> bang(Graph<State,Transition>... graphs) {
+		if( graphs.length==1) return graphs[0];
+		HashSet<Graph<State,Transition>> subgraph = new HashSet<Graph<State,Transition>>();
+		subgraph.addAll(Arrays.asList(graphs));
+		return bang(subgraph);
+	}
+	private static <State,Transition> Graph<State,Transition> bang(Set<Graph<State,Transition>> graphs) {
+		if (graphs.size() ==1) return graphs.iterator().next();
+		System.out.println("bang "+ graphs.size());
+		Graph<State,Transition> g = new Graph<State,Transition>( );
+		g.in = g.newS();
+		g.out = g.newS();
+		for (Graph<State,Transition> graph : graphs) {
+			//graph = graph.clone();
+			HashSet<Graph<State,Transition>> subgraph = new HashSet<Graph<State,Transition>>();
+			for (Graph<State,Transition> subs: graphs)
+				if (subs.id!=graph.id)
+					subgraph.add(subs.clone() );
+			Graph<State,Transition> banged = bang(subgraph);
+			g.addAll(graph);
+			g.addAll(banged);
+			g.connect(g.in, graph.in);			
+			g.connect(graph.out, banged.in);
+			g.connect(banged.out, g.out);
+		}
+		g.reduce();
+		return g;
+	}
+	
+	public static  <State,Transition> Graph<State,Transition> term(String name) {
+		System.out.println("new Term "+name);
+		Graph<State,Transition> g = new Graph<State,Transition>( );
+		g.in = g.newS();
+		g.out = g.newS();
+		T<State,Transition> t = g.connect(g.in, g.out);
+		t.implicit = false;
+		t.name= name;
+		return g;
+	}
+	
+	public static <State, Transition> Graph<State, Transition> parse(String code) throws ParseException{
+		return RegExp.parse(code);
+	}
+		  
+	
+
+	public Set<Transition> getTransitions() {
+		Set<Transition> set = new HashSet<Transition>();
+		for (T<State,Transition> t : transitions)
+			set.add(t.transition);
+		return set;
+	}
+
+	public Set<State> getStates() {
+		Set<State> set = new HashSet<State>();
+		for (S<State,Transition> s : states)
+			set.add(s.state);
+		return set;
+	}
+	
+	public void graph(String name) throws IOException {
+		File f = new File("./" + name + ".dot");
+		FileUtil.printFile(f, toString(), true);
+		Runtime.getRuntime().exec(
+				"dot " + name + ".dot -Tpng -o " + name + ".png");
+	}
+
+	
+
 }

@@ -25,10 +25,10 @@ public class Transition {
 	private String returnType;
 	private List<String> varTypes = new LinkedList<String>();
 	private List<String> exceptions = new ArrayList<String>();
-	private String host;
+	private String targetName;
 
-	public Transition host(String host) {
-		this.host = host;
+	public Transition targetName(String targetName) {
+		this.targetName = targetName;
 		return this;
 	}
 	
@@ -62,16 +62,16 @@ public class Transition {
 		MethodGen m = new MethodGen().mod("public").returns(returnType)
 				.name(name).param(varTypes).except(exceptions);
 		if (!returnState.isExit()) {
-			String body = host+"."+name+"("+varcall()+");\n";
+			String body = targetName+"."+name+"("+varcall()+");\n";
 			body+="return this;\n";
 			m.body(body	); //to be improved (do some dsl at least for statements
 		}
 		else if("void".equals(returnType) ){
-			String body = host+"."+name+"("+varcall()+");\n";
+			String body = targetName+"."+name+"("+varcall()+");\n";
 			m.body(body	); //to be improved (do some dsl at least for statements
 		}
 		else {
-			String body = "return "+host+"."+name+"("+varcall()+");\n";
+			String body = "return "+targetName+"."+name+"("+varcall()+");\n";
 			m.body(body	); //to be improved (do some dsl at least for statements
 		}
 		return m;
@@ -129,7 +129,12 @@ public class Transition {
 		returnType = s.getName();
 		
 		return this;
-		
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
+	
 
 }

@@ -1,6 +1,7 @@
 package net.ericaro.diezel.core.gen;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class ClassGen extends Gen{
 	
 	private String doc;
 	private String modifiers;
-	private String name;
+	protected String name;
 	private List<String> supers = new LinkedList<String>();
 	private List<String> interfaces = new LinkedList<String>();
 	
@@ -42,7 +43,7 @@ public class ClassGen extends Gen{
 		return this;
 	}
 	
-	public ClassGen interfaces(List<String> interfaces) {
+	public ClassGen interfaces(Collection<String> interfaces) {
 		this.interfaces.addAll(interfaces);
 		return this;
 	}

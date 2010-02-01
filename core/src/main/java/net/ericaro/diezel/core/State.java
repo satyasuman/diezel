@@ -3,20 +3,22 @@ package net.ericaro.diezel.core;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import net.ericaro.diezel.core.gen.CompilationUnitGen;
 
 public class State {
 
 	
-	private String header="";
-	private String packageName;
-	private String name;
-	private boolean exit;
-	private List<String> superInterfaces = new LinkedList<String>();
-	private List<Transition> transgen = new LinkedList<Transition>();
+	String header="/*\n"+DiezelHost.HEADER+"\n*/";
+	String packageName;
+	String name;
+	boolean exit;
+	List<String> superInterfaces = new LinkedList<String>();
+	Set<Transition> transgen = new HashSet<Transition>();
 	
 	
 	public State exiting(boolean exit) {
@@ -37,12 +39,6 @@ public class State {
 	}
 	
 
-	public void toFile(File dir) throws IOException{
-		File d = packageName==null?dir:new File(dir, packageName.replace('.', '/'));
-		StringBuilder sb = new StringBuilder();
-		getInterface().gen(sb);
-		FileUtil.copy(new File(d, name+".java")  , sb.toString(), true) ;
-		}
 	
 	public CompilationUnitGen getInterface(){
 		CompilationUnitGen cg = new CompilationUnitGen().header(header).packageName(packageName);
