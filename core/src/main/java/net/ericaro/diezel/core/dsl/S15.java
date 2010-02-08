@@ -13,16 +13,4 @@ Diezel 1.0.0 Generated.
 
 public interface S15{
 
-/***/
-public S15 addException();
-/***/
-public S11 withDoc();
-/***/
-public S9 doneWithTransitions();
-/***/
-public S15 addParameter();
-/***/
-public S12 configureTransition();
-/***/
-public S5 hostReturnType();
 }

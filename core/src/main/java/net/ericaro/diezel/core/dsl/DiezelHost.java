@@ -14,35 +14,41 @@ Diezel 1.0.0 Generated.
 public interface DiezelHost{
 
 /***/
-public void withDoc();
+public void withHostMethodName(String arg0);
 /***/
-public void to();
+public void generateToDir(java.io.File arg0) throws java.io.IOException;
 /***/
-public void target();
+public void confTransition(String arg0);
 /***/
-public void addParameter();
+public void withParameterType(String... arg0);
 /***/
-public void configureTransition();
+public void withHostReturnType(String arg0);
 /***/
-public void hostReturnType();
+public void asStartingState(boolean arg0);
 /***/
-public void named();
+public void confState();
 /***/
-public void asExit();
+public void atEndOfTransition(String arg0);
 /***/
-public void withPackage();
+public void chain(String arg0, String arg1) throws net.ericaro.diezel.core.graph.ParseException;
 /***/
-public void generate();
+public void withName(String arg0);
 /***/
-public void addException();
+public void asExitState(boolean arg0);
 /***/
-public void atStartOfTransition();
+public void withException(String... arg0);
 /***/
-public void doneWithTransitions();
+public void atStartOfTransition(String arg0);
 /***/
-public void start();
+public void withTransitions();
 /***/
-public void configureState();
+public void withHostName(String arg0);
 /***/
-public void atEndOfTransition();
+public void skipStates();
+/***/
+public void inPackage(String arg0);
+/***/
+public void withJavadoc(String arg0);
+/***/
+public void skipTransitions();
 }

@@ -54,12 +54,14 @@ public class Graph<State,Transition> {
 	}
 
 	public static class T<State,Transition> {
-		S<State,Transition> in;
+		public S<State,Transition> in;
 		public S<State,Transition> out;
 		int id;
 		public String name;
 		public Transition transition;
 		public boolean implicit = true;
+		public String capture;
+		public String[] types;
 
 		public T() {
 			id = ++ids;
@@ -239,8 +241,8 @@ public class Graph<State,Transition> {
 	/**
 	 * Remove all possible implicit links
 	 * 
-	 * @param <Transition>
-	 * @param <State>
+	 * @param <TransitionGenerator>
+	 * @param <StateGenerator>
 	 * @param term
 	 * @param g
 	 */
@@ -325,7 +327,7 @@ public class Graph<State,Transition> {
 		subgraph.addAll(Arrays.asList(graphs));
 		return bang(subgraph);
 	}
-	private static <State,Transition> Graph<State,Transition> bang(Set<Graph<State,Transition>> graphs) {
+	static <State,Transition> Graph<State,Transition> bang(Set<Graph<State,Transition>> graphs) {
 		if (graphs.size() ==1) return graphs.iterator().next();
 		System.out.println("bang "+ graphs.size());
 		Graph<State,Transition> g = new Graph<State,Transition>( );
@@ -348,7 +350,7 @@ public class Graph<State,Transition> {
 		return g;
 	}
 	
-	public static  <State,Transition> Graph<State,Transition> term(String name) {
+	public static  <State,Transition> Graph<State,Transition> term(String capture, String name, String[] types) {
 		System.out.println("new Term "+name);
 		Graph<State,Transition> g = new Graph<State,Transition>( );
 		g.in = g.newS();
@@ -356,12 +358,12 @@ public class Graph<State,Transition> {
 		T<State,Transition> t = g.connect(g.in, g.out);
 		t.implicit = false;
 		t.name= name;
+		t.capture  =capture;
+		t.types = types;
 		return g;
 	}
 	
-	public static <State, Transition> Graph<State, Transition> parse(String code) throws ParseException{
-		return RegExp.parse(code);
-	}
+	
 		  
 	
 

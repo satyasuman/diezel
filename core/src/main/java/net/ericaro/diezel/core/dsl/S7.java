@@ -14,5 +14,7 @@ Diezel 1.0.0 Generated.
 public interface S7{
 
 /***/
-public S4 withPackage();
+public S12 confState();
+/***/
+public S15 generateToDir(java.io.File arg0) throws java.io.IOException;
 }

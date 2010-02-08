@@ -14,5 +14,11 @@ Diezel 1.0.0 Generated.
 public interface S2{
 
 /***/
-public S3 to();
+public S18 skipStates();
+/***/
+public S12 confState();
+/***/
+public S1 confTransition(String arg0);
+/***/
+public S15 generateToDir(java.io.File arg0) throws java.io.IOException;
 }

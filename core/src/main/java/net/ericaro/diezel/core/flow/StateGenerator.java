@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core;
+package net.ericaro.diezel.core.flow;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,9 +8,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import net.ericaro.diezel.core.DiezelHost;
 import net.ericaro.diezel.core.gen.CompilationUnitGen;
 
-public class State {
+public class StateGenerator {
 
 	
 	String header="/*\n"+DiezelHost.HEADER+"\n*/";
@@ -18,22 +19,23 @@ public class State {
 	String name;
 	boolean exit;
 	List<String> superInterfaces = new LinkedList<String>();
-	Set<Transition> transgen = new HashSet<Transition>();
+	Set<TransitionGenerator> transgen = new HashSet<TransitionGenerator>();
+	public boolean starting; // used in the generation of the "Runner" for a DSL
 	
 	
-	public State exiting(boolean exit) {
+	public StateGenerator exiting(boolean exit) {
 		this.exit = exit;
 		return this;
 	}
 	
-	public State header(String header) {this.header = header;return this;}
-	public State packageName(String packageName) {this.packageName = packageName;return this;}
-	public State name(String name) {this.name = name;return this;}
-	public State superInterfaces(String... superInterface) {
+	public StateGenerator header(String header) {this.header = header;return this;}
+	public StateGenerator packageName(String packageName) {this.packageName = packageName;return this;}
+	public StateGenerator name(String name) {this.name = name;return this;}
+	public StateGenerator superInterfaces(String... superInterface) {
 		superInterfaces.addAll(Arrays.asList(superInterface));
 		return this;
 	}
-	public State transgen(Transition... transition) {
+	public StateGenerator transgen(TransitionGenerator... transition) {
 		transgen.addAll(Arrays.asList(transition));
 		return this;
 	}
@@ -45,7 +47,7 @@ public class State {
 		cg.mod("public interface").name(name).supers(superInterfaces);
 		
 		//append transitions
-		for(Transition gen: transgen)
+		for(TransitionGenerator gen: transgen)
 			cg.methods( gen.getMethodInterface() );
 		return cg;
 	}

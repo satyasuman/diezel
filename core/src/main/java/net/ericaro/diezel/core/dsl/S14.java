@@ -14,7 +14,11 @@ Diezel 1.0.0 Generated.
 public interface S14{
 
 /***/
-public S6 atStartOfTransition();
+public S12 confState();
 /***/
-public S6 atEndOfTransition();
+public S5 asStartingState(boolean arg0);
+/***/
+public S11 asExitState(boolean arg0);
+/***/
+public S15 generateToDir(java.io.File arg0) throws java.io.IOException;
 }

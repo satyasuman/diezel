@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import net.ericaro.diezel.core.DiezelHost;
 import net.ericaro.diezel.core.FileUtil;
-import net.ericaro.diezel.core.Target;
-import net.ericaro.diezel.core.FlowManager;
-import net.ericaro.diezel.core.State;
-import net.ericaro.diezel.core.Transition;
+import net.ericaro.diezel.core.flow.FlowGenerator;
+import net.ericaro.diezel.core.flow.StateGenerator;
+import net.ericaro.diezel.core.flow.HostGenerator;
+import net.ericaro.diezel.core.flow.TransitionGenerator;
 import net.ericaro.diezel.core.graph.Graph;
 import net.ericaro.diezel.core.graph.Graph.BNF;
 import net.ericaro.diezel.core.graph.Graph.S;
@@ -75,9 +75,9 @@ public class GraphStuff {
 		 * = bnf.definitions.get("symb");
 		 */
 
-		Transition start = new Transition().doc("starter").name("start");
-		Transition opt1 = new Transition().doc("option1").name("opt1");
-		Transition opt2 = new Transition().doc("option2").name("opt2");
+		TransitionGenerator start = new TransitionGenerator().doc("starter").name("start");
+		TransitionGenerator opt1 = new TransitionGenerator().doc("option1").name("opt1");
+		TransitionGenerator opt2 = new TransitionGenerator().doc("option2").name("opt2");
 
 		Graph workflow = bnf.seq(bnf.term(start), bnf.sel( bnf.term(opt1), bnf.term(opt2)));
 
@@ -85,7 +85,7 @@ public class GraphStuff {
 		Graph.reduce(workflow);
 		int i = 0;
 		for (S s : workflow.states)
-			s.state = new State().name("State" + ++i);
+			s.state = new StateGenerator().name("State" + ++i);
 
 		workflow.in.state.name("InitState");
 		workflow.out.state.name("double").exiting(true);

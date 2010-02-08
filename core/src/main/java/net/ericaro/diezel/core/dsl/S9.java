@@ -14,7 +14,5 @@ Diezel 1.0.0 Generated.
 public interface S9{
 
 /***/
-public S14 configureState();
-/***/
-public S2 generate();
+public S10 inPackage(String arg0);
 }

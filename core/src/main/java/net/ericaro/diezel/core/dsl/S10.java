@@ -14,5 +14,7 @@ Diezel 1.0.0 Generated.
 public interface S10{
 
 /***/
-public S7 start();
+public S19 withHostName(String arg0);
+/***/
+public S3 withTransitions();
 }

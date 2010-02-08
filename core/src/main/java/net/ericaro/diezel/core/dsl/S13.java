@@ -14,7 +14,11 @@ Diezel 1.0.0 Generated.
 public interface S13{
 
 /***/
-public S9 doneWithTransitions();
+public S16 withHostMethodName(String arg0);
 /***/
-public S12 configureTransition();
+public S13 withException(String... arg0);
+/***/
+public S4 withHostReturnType(String arg0);
+/***/
+public S13 withParameterType(String... arg0);
 }

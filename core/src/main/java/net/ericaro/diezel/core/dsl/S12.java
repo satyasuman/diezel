@@ -14,15 +14,7 @@ Diezel 1.0.0 Generated.
 public interface S12{
 
 /***/
-public S11 withDoc();
+public S8 atStartOfTransition(String arg0);
 /***/
-public S15 addException();
-/***/
-public S9 doneWithTransitions();
-/***/
-public S15 addParameter();
-/***/
-public S12 configureTransition();
-/***/
-public S5 hostReturnType();
+public S8 atEndOfTransition(String arg0);
 }

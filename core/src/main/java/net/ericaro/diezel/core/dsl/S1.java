@@ -14,9 +14,11 @@ Diezel 1.0.0 Generated.
 public interface S1{
 
 /***/
-public S14 configureState();
+public S16 withHostMethodName(String arg0);
 /***/
-public S8 asExit();
+public S13 withException(String... arg0);
 /***/
-public S2 generate();
+public S4 withHostReturnType(String arg0);
+/***/
+public S13 withParameterType(String... arg0);
 }

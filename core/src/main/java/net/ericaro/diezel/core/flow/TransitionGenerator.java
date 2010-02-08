@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core;
+package net.ericaro.diezel.core.flow;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +15,9 @@ import net.ericaro.diezel.core.graph.Graph.S;
  * @author eric
  * 
  */
-public class Transition {
+public class TransitionGenerator {
 
-	private State returnState;
+	private StateGenerator returnState;
 	
 	private String doc = "";
 	private String name;
@@ -27,32 +27,37 @@ public class Transition {
 	private List<String> exceptions = new ArrayList<String>();
 	private String targetName;
 
-	public Transition targetName(String targetName) {
+	private String capture;
+
+	public TransitionGenerator targetName(String targetName) {
 		this.targetName = targetName;
 		return this;
 	}
 	
-	public Transition doc(String doc) {
+	public TransitionGenerator doc(String doc) {
 		this.doc = doc;
 		return this;
 	}
 
-	public Transition name(String name) {
+	public TransitionGenerator name(String name) {
 		this.name = name;
 		return this;
 	}
 
-	public Transition returnType(String returnType) {
+	public TransitionGenerator returnType(String returnType) {
 		this.returnType = returnType;
 		return this;
 	}
 
-	public Transition varTypes(String... varType) {
-		varTypes.addAll(Arrays.asList(varType));
+	public TransitionGenerator varTypes(String... varType) {
+		
+		if (varType!=null) 
+			for (String var : varType)
+				if (! "".equals(var)) varTypes.add(var);
 		return this;
 	}
 
-	public Transition exceptions(String... exception) {
+	public TransitionGenerator exceptions(String... exception) {
 		exceptions.addAll(Arrays.asList(exception));
 		return this;
 	}
@@ -97,6 +102,18 @@ public class Transition {
 		return m;
 	}
 
+	public MethodGen getAdapterMethod() {
+
+		boolean hasReturn = returnState.isExit() && ! "void".equals(returnType) ; 
+		MethodGen m = new MethodGen();
+		m.mod("public").returns(hasReturn?returnType:"void");
+		m.name(name).param(varTypes).except(exceptions).
+			body((hasReturn?"return null;":""));
+		return m;
+	}
+	
+	
+	
 	private String varcall() {
 		StringBuilder sb = new StringBuilder();
 		int i = 0;
@@ -124,7 +141,7 @@ public class Transition {
 		return sb.toString();
 	}
 
-	public Transition returnState(State s) {
+	public TransitionGenerator returnState(StateGenerator s) {
 		this.returnState = s;
 		returnType = s.getName();
 		
@@ -135,6 +152,16 @@ public class Transition {
 	public String toString() {
 		return name;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public TransitionGenerator capture(String capture) {
+		this.capture = capture;
+		return this;
+	}
+
 	
 
 }

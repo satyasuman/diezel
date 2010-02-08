@@ -14,7 +14,9 @@ Diezel 1.0.0 Generated.
 public interface S11{
 
 /***/
-public S9 doneWithTransitions();
+public S12 confState();
 /***/
-public S12 configureTransition();
+public S5 asStartingState(boolean arg0);
+/***/
+public S15 generateToDir(java.io.File arg0) throws java.io.IOException;
 }
