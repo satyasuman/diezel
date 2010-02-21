@@ -17,8 +17,7 @@
 		<dependency>
 			<groupId>net.ericaro</groupId>
 			<artifactId>diezel-annotations</artifactId>
-			<version>${project.version}</version>
-			<type>jar</type>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -35,6 +34,7 @@
 			<id>sonatype-nexus-snapshots</id>
 			<name>Sonatype Nexus Snapshots</name>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 		<repository>
 			<id>sonatype-nexus-staging</id>

@@ -73,7 +73,7 @@ public class CompilationUnit extends Class implements FileUnit{
 		// header
 		// package definition
 		// import
-		_(header)._("package ", packageName)._(packageName == null ? "" : ";")
+		_("/*\n")._(header)._("\n*/")._("package ", packageName)._(packageName == null ? "" : ";")
 				._("\n");
 		_(imports);
 		super.genImpl();

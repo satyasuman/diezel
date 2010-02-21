@@ -40,9 +40,9 @@ public class Transition {
 		if (m.isAnnotationPresent(net.ericaro.diezel.annotations.Transition.class) ){
 			net.ericaro.diezel.annotations.Transition t = m.getAnnotation(net.ericaro.diezel.annotations.Transition.class);
 			alias = t.value();
-			if (alias==null || "".equals(alias)){
-				alias = name;
-			}
+		}
+		if (alias==null || "".equals(alias)){
+			alias = name;
 		}
 		
 		for (Class c: m.getExceptionTypes())

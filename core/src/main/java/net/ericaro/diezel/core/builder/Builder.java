@@ -102,13 +102,19 @@ public class Builder<E> {
 		if (!l.isEmpty())
 			returnType = l.get(0);
 		packageName = builder.getPackage().getName();
+
+		// test ing returntype, and callable options
+		if (callable && returnType.isVoid()) {
+			returnType.type("T"); // force to something
+		}
+		if (!callable)
+			returnType = new Type(); // force to void
+
 		for (Method m : builder.getMethods()) {
-			if (m
-					.isAnnotationPresent(net.ericaro.diezel.annotations.Transition.class)) {
-				Transition t = new Transition();
-				t.parse(m);
-				transitions.add(t);
-			}
+			Transition t = new Transition();
+			t.parse(m);
+			transitions.add(t);
+
 		}
 	}
 
@@ -139,7 +145,11 @@ public class Builder<E> {
 				stateType.type(guideBaseName);
 			else
 				stateType.type(guideBaseName + ++i);
-			stateType.generics(type.getGenerics());
+			if (type.getGenerics().isEmpty() && callable) {
+				stateType.generics(returnType);
+			} else {
+				stateType.generics(type.getGenerics());
+			}
 			stateTypes.put(s.id, stateType);
 			System.out.println("preparing " + stateType);
 		}
@@ -166,14 +176,14 @@ public class Builder<E> {
 		return fileunits;
 	}
 
-	
-	public static void generate(Class builder, File dir) throws ParseException, IOException{
+	public static void generate(Class builder, File dir) throws ParseException,
+			IOException {
 		Builder b = Builder.parse(builder);
 		b.buildGraph();
 		b.toFile(dir);
-	
+
 	}
-	
+
 	public void toFile(File dir) throws IOException {
 		for (FileUnit u : generate())
 			u.toDir(dir);
@@ -185,9 +195,9 @@ public class Builder<E> {
 		c.mod(Modifier.Public).asClass().type(type);
 
 		Type targetType = this.type;
-		if (callable) {
+		if (callable && !returnType.isVoid()) {
 			// field and constructor with return type
-			c.fields(new Field().type(returnType).name(returnName));
+			c.fields(new Field().mod(Modifier.Private).type(returnType).name(returnName));
 			Constructor cons = new Constructor().container(type.getName());
 			cons.mod(Modifier.Public).param(targetType, returnType).body(
 					"this." + builderName + " = " + cons.arg(0) + ";" + "this."
@@ -200,7 +210,7 @@ public class Builder<E> {
 				"this." + builderName + " = " + cons.arg(0) + ";");
 		c.constructors(cons);
 
-		c.fields(new Field().type(targetType).name(builderName));
+		c.fields(new Field().mod(Modifier.Private).type(targetType).name(builderName));
 		return c;
 	}
 

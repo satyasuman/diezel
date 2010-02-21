@@ -1,6 +1,7 @@
 package net.ericaro.diezel.core.gen;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /** Simple statement field with initializer.
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public class Field extends Gen {
 
-	private List<Modifier> modifiers; //modifiers for this field
+	private List<Modifier> modifiers = new LinkedList<Modifier>(); //modifiers for this field
 	private Type type; // FQN of this field.
 	private String name; // field name (array accepted)
 	private String initialiser; // initializer statement for this field.
