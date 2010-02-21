@@ -30,7 +30,7 @@
 			<id>sonatype-nexus-snapshots</id>
 			<name>Sonatype Nexus Snapshots</name>
 			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
-			<uniqueVersion>true</uniqueVersion>
+			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
 		<repository>
 			<id>sonatype-nexus-staging</id>
