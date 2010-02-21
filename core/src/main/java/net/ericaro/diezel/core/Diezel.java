@@ -1,46 +1,32 @@
 package net.ericaro.diezel.core;
 
-import net.ericaro.diezel.core.dsl.FlowManager;
-import net.ericaro.diezel.core.dsl.S1;
-import net.ericaro.diezel.core.dsl.S17;
-import net.ericaro.diezel.core.dsl.S5;
-import net.ericaro.diezel.core.dsl.S7;
+import java.io.File;
+import java.io.IOException;
+
+import net.ericaro.diezel.core.builder.Builder;
+import net.ericaro.diezel.core.parser.ParseException;
 
 
-/** Host for Diezel EDSL
+
+
+
+/** Diezel is a simple tool to generate Intermediary classes to guide programmers using a Complex class
+ * based on a workflow.
  * 
  * @author eric
  *
  */
-public class Diezel implements Runnable {
+public class Diezel {
 
-	public static final String DIEZEL_DSL = "		\n" + 
-			"		chain(String), inPackage(String), withHostName(String)?, withTransitions, \n" + 
-			"			(\n" + 
-			"			   confTransition(String), (withParameterType(String...) | withException(String...))*\n" + 
-			"			   , withHostReturnType(String)?, withHostMethodName(String), withJavadoc(String)?\n" + 
-			"			)*\n" + 
-			"		|\n" + 
-			"			skipTransitions,\n" + 
-			"		\n" + 
-			"		(\n" + 
-			"			confState, atEndOfTransition(String)|atStartOfTransition(String), withName(String)?, asExitState(boolean)?, asStartingState(boolean)? )*\n" + 
-			"		|\n" + 
-			"			skipStates, generateToDir(java.io.File)\n" + 
-			"";
 	
-	
-	DiezelHost host = new DiezelHost(); // the engine that implements all functions
-	
-	
-	
-	
-	
-
-
-	public void run() {
-		
+	public static void generate(File dir, Class... classes) throws DiezelException{
+		for (Class c: classes)
+			try {
+				Builder.generate(c, dir);
+			} catch (ParseException e) {
+				throw new DiezelException("Error while parsing "+c+" workfow: \n"+ e.getMessage(), e);
+			} catch (IOException e) {
+				throw new DiezelException("Error while generating workflow for "+c+" into "+dir+" due to "+e.getMessage(), e);
+			}
 	}
-	
-
 }

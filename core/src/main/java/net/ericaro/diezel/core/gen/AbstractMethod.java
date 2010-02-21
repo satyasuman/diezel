@@ -5,7 +5,7 @@ package net.ericaro.diezel.core.gen;
  * @author eric
  *
  */
-public class AbstractMethodGen extends MethodGen {
+public class AbstractMethod extends Method {
 
 	@Override
 	protected void methodBody() {

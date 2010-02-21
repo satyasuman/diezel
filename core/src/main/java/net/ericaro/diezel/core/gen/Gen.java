@@ -1,6 +1,10 @@
 package net.ericaro.diezel.core.gen;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 
 /** Abstract class for any java statement generation. Provides simple reusable method for appending into a StringBuilder
@@ -27,6 +31,12 @@ public abstract class Gen {
 	protected abstract void genImpl();
 
 
+	private <G extends Gen> List<G> clean(List<G> list){
+		if (list==null) return Collections.EMPTY_LIST;
+		for (Iterator iterator = list.iterator(); iterator.hasNext();) 
+			if (iterator.next()==null) iterator.remove() ;
+		return list;
+	}
 	/** a ""gettext" like function, equivalent to append() execept that null String does nothing.
 	 * 
 	 * @param o
@@ -38,6 +48,22 @@ public abstract class Gen {
 		return this;
 	}
 	
+	protected <G extends Gen> Gen _(G... gens) {
+		return this._(Arrays.asList(gens));
+	}
+	/** Generate every Gen in the same order. (useful for collection of statements like methods, or fields).
+	 * 
+	 * @param <G>
+	 * @param gens
+	 * @return
+	 */
+	protected <G extends Gen> Gen _(List<G> list) {
+		list = clean(list);
+		for (G cg : list)
+			if(cg!=null) cg.gen(this.sb);
+		return this;
+	}
+
 	/** Appends a trailing space.
 	 * 
 	 * @return
@@ -46,14 +72,16 @@ public abstract class Gen {
 		sb.append(" ");
 		return this;
 	}
-
+	// END OF BASIC APPENDER
+	
+	
 	/** equivalent to _(keyword, list, ",")
 	 * 
 	 * @param keyword
 	 * @param list
-	 * @return
+	 * @return	 
 	 */
-	protected Gen _(String keyword, List<String> list) {
+	protected <G extends Gen> Gen _(String keyword, List<G> list) {
 		return _(keyword, list, ",");
 	}
 
@@ -65,12 +93,29 @@ public abstract class Gen {
 	 * @param separator
 	 * @return
 	 */
-	protected Gen _(String keyword, List<String> list, String separator) {
-		if (list != null && list.size() > 0) {
+	protected <G extends Gen> Gen _(String keyword, List<G> list, String separator) {
+		list = clean(list);
+		if (!list.isEmpty()) {
 			_(" ")._(keyword)._(" ")._(list, separator);
 		}
 		return this;
 	}
+	/** Generate the capture definition
+	 * 
+	 */
+	protected <G extends Gen> Gen _opt(String open, String close, List<G> list) {
+	return this._opt(open, close, list, ",");
+	}
+	protected <G extends Gen> Gen _opt(String open, String close, List<G> list, String sep) {
+		list = clean(list);
+		if (!list.isEmpty())
+		{
+			_(open)._(list, sep)._(close);
+		}
+		return this;
+	}
+	
+
 
 	/** Append the keyword and the value if the value is not null.
 	 * Useful for statement like package, or field initializer.
@@ -91,27 +136,14 @@ public abstract class Gen {
 	 * @param separator
 	 * @return
 	 */
-	protected Gen _(List<String> list, String separator) {
+	protected <G extends Gen> Gen _(List<G> list, String separator) {
+		list = clean(list);
 		int i = 0;
-		if (list != null)
-			for (String e : list)
-				if(e!=null) _((i++) == 0 ? "" : separator + " ")._(e);
+		for (G e : list)
+			if(e!=null) _((i++) == 0 ? "" : separator + " ")._(e);
 		return this;
 	}
-
-	/** Generate every Gen in the same order. (useful for collection of statements like methods, or fields).
-	 * 
-	 * @param <G>
-	 * @param gens
-	 * @return
-	 */
-	protected <G extends Gen> Gen _(List<G> gens) {
-		if (gens != null)
-			for (G cg : gens)
-				cg.gen(this.sb);
-		return this;
-	}
-
+	
 	/**
 	 *  generate this Gen and return the stringbuilder. For debug only, as this method is not thread safe (the stringbuilder might be overidden).
 	 */

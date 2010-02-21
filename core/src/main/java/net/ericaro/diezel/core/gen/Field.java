@@ -1,14 +1,17 @@
 package net.ericaro.diezel.core.gen;
 
+import java.util.Arrays;
+import java.util.List;
+
 /** Simple statement field with initializer.
  * 
  * @author eric
  *
  */
-public class FieldGen extends Gen {
+public class Field extends Gen {
 
-	private String modifiers; //modifiers for this field
-	private String type; // FQN of this field.
+	private List<Modifier> modifiers; //modifiers for this field
+	private Type type; // FQN of this field.
 	private String name; // field name (array accepted)
 	private String initialiser; // initializer statement for this field.
 
@@ -17,7 +20,7 @@ public class FieldGen extends Gen {
 	 * @param type
 	 * @return
 	 */
-	public FieldGen type(String type) {
+	public Field type(Type type) {
 		this.type = type;
 		return this;
 	}
@@ -27,7 +30,7 @@ public class FieldGen extends Gen {
 	 * @param name
 	 * @return
 	 */
-	public FieldGen name(String name) {
+	public Field name(String name) {
 		this.name = name;
 		return this;
 	}
@@ -37,18 +40,21 @@ public class FieldGen extends Gen {
 	 * @param initialiser
 	 * @return
 	 */
-	public FieldGen initialiser(String initialiser) {
+	public Field initialiser(String initialiser) {
 		this.initialiser = initialiser;
 		return this;
 	}
 	
-	/** set this field modifiers.
+	/** defines the modifiers for this class. (including the type :( )
 	 * 
 	 * @param modifiers
 	 * @return
 	 */
-	public FieldGen mod(String modifiers) {
-		this.modifiers = modifiers;
+	public Field mod(Modifier... modifiers) {
+		return mod(Arrays.asList(modifiers));
+	}
+	public Field mod(List<Modifier> modifiers) {
+		this.modifiers.addAll(modifiers);
 		return this;
 	}
 	

@@ -6,7 +6,7 @@ package net.ericaro.diezel.core.gen;
  * @author eric
  *
  */
-public class ConstructorGen extends MethodGen {
+public class Constructor extends Method {
 
 	String enclosingClass; // the class this constructor belongs to.
 	
@@ -15,7 +15,7 @@ public class ConstructorGen extends MethodGen {
 	 * @param containingClass
 	 * @return
 	 */
-	public ConstructorGen container(String containingClass) {
+	public Constructor container(String containingClass) {
 		this.enclosingClass = containingClass;
 		return this;
 	}

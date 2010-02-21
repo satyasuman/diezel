@@ -11,54 +11,76 @@ import java.util.List;
  * @author eric
  * 
  */
-public class ClassGen extends Gen{
+public class Class extends Gen{
 
 	
 	private String javadoc;
-	private String modifiers;
-	protected String name;
-	private List<String> supers = new LinkedList<String>(); // list of super classes (for interfaces only
-	private List<String> interfaces = new LinkedList<String>();
-	
-	
+	private List<Modifier> modifiers = new LinkedList<Modifier>();
+	private List<Type> supers = new LinkedList<Type>(); // list of super classes (for interfaces only
+	private List<Type> interfaces = new LinkedList<Type>();
+	protected String classType;
+	protected Type type;
 	
 	// * static
-	private List<StaticGen> statics = new LinkedList<StaticGen>();
+	private List<StaticBlock> statics = new LinkedList<StaticBlock>();
 	// * fields
-	private List<FieldGen> fields = new LinkedList<FieldGen>();
+	private List<Field> fields = new LinkedList<Field>();
 	// * inner classes (no header no import
-	private List<InnerClassGen> innerClasses = new LinkedList<InnerClassGen>();
+	private List<InnerClass> innerClasses = new LinkedList<InnerClass>();
 	// * constructor
-	private List<ConstructorGen> constructors = new LinkedList<ConstructorGen>();
+	private List<Constructor> constructors = new LinkedList<Constructor>();
 	// * methods
-	private List<MethodGen> methods = new LinkedList<MethodGen>();
+	private List<Method> methods = new LinkedList<Method>();
 	
 	/** set the list of superclasse. Use only for interfaces
 	 * 
 	 * @param supers
 	 * @return
 	 */
-	public ClassGen supers(List<String> supers) {
+	public Class supers(List<Type> supers) {
 		this.supers.addAll(supers);
 		return this;
 	}
+	
+	
 
 	/** var arg of super classes (use only for interfaces)
 	 * 
 	 * @param supers
 	 * @return
 	 */
-	public ClassGen supers(String... supers) {
+	public Class supers(Type... supers) {
 		this.supers.addAll(Arrays.asList(supers));
 		return this;
 	}
+	
+	/** set the list of generics
+	 * 
+	 * @param generics
+	 * @return
+	 */
+	public Class generics(List<Type> generics) {
+		this.type.generics(generics);
+		return this;
+	}
+	
+	/** var arg of generics
+	 * 
+	 * @param supers
+	 * @return
+	 */
+	public Class generics(Type... generics) {
+		this.generics(Arrays.asList(generics));
+		return this;
+	}
+	
 	
 	/** List of implemented interfaces
 	 * 
 	 * @param interfaces
 	 * @return
 	 */
-	public ClassGen interfaces(Collection<String> interfaces) {
+	public Class interfaces(Collection<Type> interfaces) {
 		this.interfaces.addAll(interfaces);
 		return this;
 	}
@@ -68,7 +90,7 @@ public class ClassGen extends Gen{
 	 * @param interfaces
 	 * @return
 	 */
-	public ClassGen interfaces(String... interfaces) {
+	public Class interfaces(Type... interfaces) {
 		this.interfaces.addAll(Arrays.asList(interfaces));
 		return this;
 	}
@@ -78,7 +100,7 @@ public class ClassGen extends Gen{
 	 * @param statics
 	 * @return
 	 */
-	public ClassGen statics(List<StaticGen> statics) {
+	public Class statics(List<StaticBlock> statics) {
 		this.statics.addAll(statics);
 		return this;
 	}
@@ -88,7 +110,7 @@ public class ClassGen extends Gen{
 	 * @param statics
 	 * @return
 	 */
-	public ClassGen statics(StaticGen... statics) {
+	public Class statics(StaticBlock... statics) {
 		this.statics.addAll(Arrays.asList(statics));
 		return this;
 	}
@@ -98,7 +120,7 @@ public class ClassGen extends Gen{
 	 * @param fields
 	 * @return
 	 */
-	public ClassGen fields(List<FieldGen> fields) {
+	public Class fields(List<Field> fields) {
 		this.fields.addAll(fields);
 		return this;
 	}
@@ -108,7 +130,7 @@ public class ClassGen extends Gen{
 	 * @param fields
 	 * @return
 	 */
-	public ClassGen fields(FieldGen... fields) {
+	public Class fields(Field... fields) {
 		this.fields.addAll(Arrays.asList(fields));
 		return this;
 	}
@@ -118,7 +140,7 @@ public class ClassGen extends Gen{
 	 * @param innerClasses
 	 * @return
 	 */
-	public ClassGen inner(List<InnerClassGen> innerClasses) {
+	public Class inner(List<InnerClass> innerClasses) {
 		this.innerClasses.addAll(innerClasses);
 		return this;
 	}
@@ -128,7 +150,7 @@ public class ClassGen extends Gen{
 	 * @param innerClasses
 	 * @return
 	 */
-	public ClassGen inner(InnerClassGen... innerClasses) {
+	public Class inner(InnerClass... innerClasses) {
 		this.innerClasses.addAll(Arrays.asList(innerClasses));
 		return this;
 	}
@@ -139,7 +161,7 @@ public class ClassGen extends Gen{
 	 * @param constructors
 	 * @return
 	 */
-	public ClassGen constructors(List<ConstructorGen> constructors) {
+	public Class constructors(List<Constructor> constructors) {
 		this.constructors.addAll(constructors);
 		return this;
 	}
@@ -149,7 +171,7 @@ public class ClassGen extends Gen{
 	 * @param constructors
 	 * @return
 	 */
-	public ClassGen constructors(ConstructorGen... constructors) {
+	public Class constructors(Constructor... constructors) {
 		this.constructors.addAll(Arrays.asList(constructors));
 		return this;
 	}
@@ -159,7 +181,7 @@ public class ClassGen extends Gen{
 	 * @param methods
 	 * @return
 	 */
-	public ClassGen methods(List<MethodGen> methods) {
+	public Class methods(List<Method> methods) {
 		this.methods.addAll(methods);
 		return this;
 	}
@@ -169,7 +191,7 @@ public class ClassGen extends Gen{
 	 * @param methods
 	 * @return
 	 */
-	public ClassGen methods(MethodGen... methods) {
+	public Class methods(Method... methods) {
 		this.methods.addAll(Arrays.asList(methods));
 		return this;
 	}
@@ -179,7 +201,7 @@ public class ClassGen extends Gen{
 	 * @param doc
 	 * @return
 	 */
-	public ClassGen javadoc(String doc) {
+	public Class javadoc(String doc) {
 		this.javadoc = doc;
 		return this;
 	}
@@ -190,8 +212,11 @@ public class ClassGen extends Gen{
 	 * @param modifiers
 	 * @return
 	 */
-	public ClassGen mod(String modifiers) {
-		this.modifiers = modifiers;
+	public Class mod(Modifier... modifiers) {
+		return mod(Arrays.asList(modifiers));
+	}
+	public Class mod(List<Modifier> modifiers) {
+		this.modifiers.addAll(modifiers);
 		return this;
 	}
 	
@@ -201,8 +226,8 @@ public class ClassGen extends Gen{
 	 * @param name
 	 * @return
 	 */
-	public ClassGen name(String name) {
-		this.name = name;
+	public Class type(Type type) {
+		this.type= type;
 		return this;
 	}
 		
@@ -235,14 +260,25 @@ public class ClassGen extends Gen{
 	protected void doc() {
 		_("/**")._(javadoc)._("\n")._("*/\n");
 	}
-
+	
+	public Class asClass(){
+		this.classType = "class";
+		return this;
+	}
+	public Class asInterface() {
+		this.classType="interface";
+		return this;
+	}
 	
 	/**
 	 * generates the declaration of this class.
 	 */
 	protected void declaration() {
-		_(modifiers)._()._(name)._("extends", supers)._("implements", interfaces)._("{\n");
+		_(modifiers)._()._(classType)._()._(type)._("extends", supers)._("implements", interfaces)._("{\n");
 	}
+
+
+
 	
 
 	

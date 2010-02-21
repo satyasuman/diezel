@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import net.ericaro.diezel.core.FileUtil;
 
 
 /** A single top level compilation unit.
@@ -13,11 +12,12 @@ import net.ericaro.diezel.core.FileUtil;
  * @author eric
  *
  */
-public class CompilationUnitGen extends ClassGen {
+public class CompilationUnit extends Class implements FileUnit{
 
 	private String header; // header for this file
 	private String packageName; // package declaration
-	private List<ImportGen> imports; // list of imports.
+	private List<Import> imports; // list of imports.
+	
 
 	
 	/**defines the header for this compilation unit (csv tags, or ascii art, or license)
@@ -25,17 +25,20 @@ public class CompilationUnitGen extends ClassGen {
 	 * @param header
 	 * @return
 	 */
-	public CompilationUnitGen header(String header) {
+	public CompilationUnit header(String header) {
 		this.header = header;
 		return this;
 	}
+	
+	
+	
 
 	/** defines the fully qualified package name (null does not define any package)
 	 * 
 	 * @param packageName
 	 * @return
 	 */
-	public CompilationUnitGen packageName(String packageName) {
+	public CompilationUnit packageName(String packageName) {
 		this.packageName = packageName;
 		return this;
 	}
@@ -45,7 +48,7 @@ public class CompilationUnitGen extends ClassGen {
 	 * @param imports
 	 * @return
 	 */
-	public CompilationUnitGen imports(ImportGen... imports) {
+	public CompilationUnit imports(Import... imports) {
 		this.imports.addAll(Arrays.asList(imports));
 		return this;
 	}
@@ -55,7 +58,7 @@ public class CompilationUnitGen extends ClassGen {
 	 * @param imports
 	 * @return
 	 */
-	public CompilationUnitGen imports(List<ImportGen> imports) {
+	public CompilationUnit imports(List<Import> imports) {
 		this.imports.addAll(imports);
 		return this;
 	}
@@ -86,7 +89,7 @@ public class CompilationUnitGen extends ClassGen {
 				'.', '/'));
 		StringBuilder sb = new StringBuilder();
 		gen(sb);
-		FileUtil.printFile(new File(d, name + ".java"), sb.toString(), true);
+		FileUtil.printFile(new File(d, type.getName() + ".java"), sb.toString(), true);
 	}
 
 }

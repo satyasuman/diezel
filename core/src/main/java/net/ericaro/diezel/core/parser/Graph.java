@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core.graph;
+package net.ericaro.diezel.core.parser;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.ericaro.diezel.core.FileUtil;
+import net.ericaro.diezel.core.gen.FileUtil;
+
 
 /**
  * Graph manages a graph of T (edge that "handle" a Transition object) and S
@@ -24,14 +25,13 @@ import net.ericaro.diezel.core.FileUtil;
  * 
  *@TODO need cleaning/commenting
  */
-public class Graph<State,Transition> {
+public class Graph {
 	static int ids = 0;
 
-	public static class S<State,Transition> {
-		int id;
-		public State state;
-		List<T<State,Transition>> ins = new ArrayList<T<State,Transition>>();
-		public List<T<State,Transition>> outs = new ArrayList<T<State,Transition>>();
+	public static class S {
+		public int id;
+		List<T> ins = new ArrayList<T>();
+		public List<T> outs = new ArrayList<T>();
 
 		public S() {
 			id = ++ids;
@@ -53,15 +53,12 @@ public class Graph<State,Transition> {
 
 	}
 
-	public static class T<State,Transition> {
-		public S<State,Transition> in;
-		public S<State,Transition> out;
+	public static class T {
+		public S in;
+		public S out;
 		int id;
 		public String name;
-		public Transition transition;
 		public boolean implicit = true;
-		public String capture;
-		public String[] types;
 
 		public T() {
 			id = ++ids;
@@ -72,7 +69,7 @@ public class Graph<State,Transition> {
 			sb.append(in.ref()).append(" -> ").append(out.ref()).append("[")
 					.append("label=\"").append(
 							implicit ? "*"
-									: (transition==null?name:transition) ).append("\"").append("]");// .;
+									: name ).append("\"").append("]");// .;
 			return sb.toString();
 		}
 
@@ -81,29 +78,35 @@ public class Graph<State,Transition> {
 		public String toString() {
 			return toEdge();
 		}
+		
+		public void copyTo(T nt){
+			nt.name = name;
+			nt.implicit= implicit ;
+			nt.in = in;
+			nt.out = out;
+		}
 	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph {\n");
-		for (S<State,Transition> s : states) {
+		for (S s : states) {
 			String shape = "circle"; // "box" "circle"
 			if (s == in || s == out)
 				shape = "point";
 			sb.append(s.toNode(shape)).append(";\n");
 		}
-		for (T<State,Transition> t : transitions)
+		for (T t : transitions)
 			sb.append(t.toEdge()).append(";\n");
 		sb.append("}\n");
 
 		return sb.toString();
 	}
 
-	public Set<T<State,Transition>> transitions = new HashSet<T<State,Transition>>();
-	public Set<S<State,Transition>> states = new HashSet<S<State,Transition>>();
-	S<State,Transition> in;
-	S<State,Transition> out;
-	State state;
+	public Set<T> transitions = new HashSet<T>();
+	public Set<S> states = new HashSet<S>();
+	public S in;
+	public S out;
 	int id;
 
 	public Graph()
@@ -116,13 +119,12 @@ public class Graph<State,Transition> {
 	}
 
 
-	public Graph<State,Transition> clone() {
-		Graph<State,Transition> g = new Graph<State,Transition>();
-		g.state = state;
-		Map<S<State,Transition>, S<State,Transition>> old2new = new HashMap<S<State,Transition>, S<State,Transition>>();
-		for (S<State,Transition> s : states)
+	public Graph clone() {
+		Graph g = new Graph();
+		Map<S, S> old2new = new HashMap<S, S>();
+		for (S s : states)
 			g.clone(s, old2new);
-		for (T<State,Transition> t : transitions)
+		for (T t : transitions)
 			g.clone(t, old2new);
 
 		g.in = g.clone(in, old2new);
@@ -130,20 +132,20 @@ public class Graph<State,Transition> {
 		return g;
 	}
 
-	public S<State,Transition> newS() {
-		S<State,Transition> s = new S<State,Transition>();
+	public S newS() {
+		S s = new S();
 		states.add(s);
 		return s;
 	}
 
-	public T<State,Transition> newT() {
-		T<State,Transition> t = new T<State,Transition>();
+	public T newT() {
+		T t = new T();
 		transitions.add(t);
 		return t;
 	}
 
-	public T<State,Transition> connect(S<State,Transition> in, S<State,Transition> out) {
-		T<State,Transition> t = newT();
+	public T connect(S in, S out) {
+		T t = newT();
 		t.in = in;
 		t.out = out;
 		in.outs.add(t);
@@ -151,29 +153,27 @@ public class Graph<State,Transition> {
 		return t;
 	}
 
-	private S<State,Transition> clone(S<State,Transition> s, Map<S<State,Transition>, S<State,Transition>> old2new) {
+	private S clone(S s, Map<S, S> old2new) {
 		if (!old2new.containsKey(s)) {
-			S<State,Transition> s2 = newS();
+			S s2 = newS();
 			old2new.put(s, s2);
-			s2.state = s.state;
 		}
 		return old2new.get(s);
 
 	}
 
-	private T<State,Transition> clone(T<State,Transition> t, Map<S<State,Transition>, S<State,Transition>> old2new) {
-		T<State,Transition> t2 = connect(clone(t.in, old2new), clone(t.out, old2new));
+	private T clone(T t, Map<S, S> old2new) {
+		T t2 = connect(clone(t.in, old2new), clone(t.out, old2new));
 		t2.implicit = t.implicit;
-		t2.transition = t.transition;
 		t2.name= t.name;
 		return t;
 	}
 
-	private void remove(S<State,Transition> s) {
-		for (T<State,Transition> t : s.ins)
+	private void remove(S s) {
+		for (T t : s.ins)
 			if (t.out == s)
 				t.out = null;
-		for (T<State,Transition> t : s.outs)
+		for (T t : s.outs)
 			if (t.in == s)
 				t.in = null;
 		states.remove(s);
@@ -183,18 +183,18 @@ public class Graph<State,Transition> {
 			out = null;
 	}
 
-	public void remove(T<State,Transition> t) {
-		S<State,Transition> in = t.in;
-		S<State,Transition> out = t.out;
+	public void remove(T t) {
+		S in = t.in;
+		S out = t.out;
 		in.outs.remove(t);
 		out.ins.remove(t);
 		transitions.remove(t);
 	}
 
 	
-	public void shortcut(T<State,Transition> t) {
-		S<State,Transition> in = t.in;
-		S<State,Transition> out = t.out;
+	public void shortcut(T t) {
+		S in = t.in;
+		S out = t.out;
 		
 		assert in.outs.size() == 1 || out.ins.size() == 1 : "cannot simplify graph using a Transition that is not a singleton";
 		assert t.implicit : "cannot simplify graph using a Transition that is not implicit";
@@ -203,7 +203,7 @@ public class Graph<State,Transition> {
 
 		if (in.outs.size() == 0) { // remove in
 			out.ins.addAll(in.ins);// copy all incoming
-			for (T<State,Transition> u : in.ins)
+			for (T u : in.ins)
 				u.out = out;// and move their target to out
 			in.ins.clear();
 			if (this.in == in)
@@ -215,7 +215,7 @@ public class Graph<State,Transition> {
 		} else {
 			assert (out.ins.size() == 0) : "There is a problem with the extremity nodes.";
 			in.outs.addAll(out.outs);// copy all outgoing
-			for (T<State,Transition> u : out.outs)
+			for (T u : out.outs)
 				// move transition
 				u.in = in;// and move their source to in
 			out.outs.clear();
@@ -229,7 +229,7 @@ public class Graph<State,Transition> {
 
 	}
 
-	public void addAll(Graph<State,Transition> g) {
+	public void addAll(Graph g) {
 		states.addAll(g.states);
 		transitions.addAll(g.transitions);
 	}
@@ -242,18 +242,45 @@ public class Graph<State,Transition> {
 	 * Remove all possible implicit links
 	 * 
 	 * @param <TransitionGenerator>
-	 * @param <StateGenerator>
+	 * @param <GuideGenerator>
 	 * @param term
 	 * @param g
 	 */
 	public void reduce() {
 
-		Set<T<State,Transition>> shortcutable = new HashSet<T<State,Transition>>();
-		for (T<State,Transition> t : transitions)
+		Set<T> shortcutable = new HashSet<T>();
+		for (T t : transitions)
 			if (t.implicit && (t.in.outs.size() == 1 || t.out.ins.size() == 1 ))
 				shortcutable.add(t);
-		for (T<State,Transition> t : shortcutable)
+		for (T t : shortcutable)
 			shortcut(t);
+	}
+	
+	private T nextImplicit(){
+		for(T t: transitions)
+			if (t.implicit) return t;
+		return null;
+	}
+	
+	//ALGS
+	public void unimplicit(){
+		T t= nextImplicit();
+		while(t!=null){
+			remove(t);
+			S in = t.in;
+			S out = t.out;
+			// copy all t from out to in
+			for(T outT: out.ins){ //for each trans in the next state
+				//copy it to in
+				T newt = newT();
+				outT.copyTo(newt); // basic copy
+				newt.in = t.in; // move it's start
+				//add it to the both state ends
+				in.outs.add(newt);
+				newt.out.ins.add(newt);
+			}
+			t= nextImplicit();
+		}
 	}
 
 	
@@ -262,17 +289,17 @@ public class Graph<State,Transition> {
 
 	
 
-	public static <State,Transition> Graph<State,Transition> opt(Graph<State,Transition> g) {
+	public static  Graph opt(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.in, g.out);
 		return g;
 	}
 
-	public static <State,Transition> Graph<State,Transition> seq(Graph<State,Transition>... graphs) {
+	public static  Graph seq(Graph... graphs) {
 		if( graphs.length==1) return graphs[0];
-		Graph<State,Transition> g = new Graph<State,Transition>();
+		Graph g = new Graph();
 		int last = graphs.length - 1;
-		T<State,Transition>[] ts = new T[last];
+		T[] ts = new T[last];
 		for (int i = 0; i < graphs.length; i++)
 			g.addAll(graphs[i]);
 		g.in = graphs[0].in;
@@ -290,21 +317,21 @@ public class Graph<State,Transition> {
 	
 	
 
-	public static <State,Transition> Graph<State,Transition> iter(Graph<State,Transition> g) {
+	public static  Graph iter(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.in, g.out);		// removing this line forces a ()+
 		g.connect(g.out, g.in);
 		return g;
 	}
-	public static <State,Transition> Graph<State,Transition> iter_once(Graph<State,Transition> g) {
+	public static  Graph iter_once(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.out, g.in);
 		return g;
 	}
 
-	public static <State,Transition> Graph<State,Transition> sel(Graph<State,Transition>... graphs) {
+	public static  Graph sel(Graph... graphs) {
 		if( graphs.length==1) return graphs[0];
-		Graph<State,Transition> g = new Graph<State,Transition>( );
+		Graph g = new Graph( );
 		g.in = g.newS();
 		g.out = g.newS();
 		for (int i = 0; i < graphs.length; i++) {
@@ -321,25 +348,25 @@ public class Graph<State,Transition> {
 	 * @param result
 	 * @return
 	 */
-	public static <State,Transition> Graph<State,Transition> bang(Graph<State,Transition>... graphs) {
+	public static  Graph bang(Graph... graphs) {
 		if( graphs.length==1) return graphs[0];
-		HashSet<Graph<State,Transition>> subgraph = new HashSet<Graph<State,Transition>>();
+		HashSet<Graph> subgraph = new HashSet<Graph>();
 		subgraph.addAll(Arrays.asList(graphs));
 		return bang(subgraph);
 	}
-	static <State,Transition> Graph<State,Transition> bang(Set<Graph<State,Transition>> graphs) {
+	static  Graph bang(Set<Graph> graphs) {
 		if (graphs.size() ==1) return graphs.iterator().next();
 		System.out.println("bang "+ graphs.size());
-		Graph<State,Transition> g = new Graph<State,Transition>( );
+		Graph g = new Graph( );
 		g.in = g.newS();
 		g.out = g.newS();
-		for (Graph<State,Transition> graph : graphs) {
+		for (Graph graph : graphs) {
 			//graph = graph.clone();
-			HashSet<Graph<State,Transition>> subgraph = new HashSet<Graph<State,Transition>>();
-			for (Graph<State,Transition> subs: graphs)
+			HashSet<Graph> subgraph = new HashSet<Graph>();
+			for (Graph subs: graphs)
 				if (subs.id!=graph.id)
 					subgraph.add(subs.clone() );
-			Graph<State,Transition> banged = bang(subgraph);
+			Graph banged = bang(subgraph);
 			g.addAll(graph);
 			g.addAll(banged);
 			g.connect(g.in, graph.in);			
@@ -350,35 +377,15 @@ public class Graph<State,Transition> {
 		return g;
 	}
 	
-	public static  <State,Transition> Graph<State,Transition> term(String capture, String name, String[] types) {
+	public static   Graph term(String name) {
 		System.out.println("new Term "+name);
-		Graph<State,Transition> g = new Graph<State,Transition>( );
+		Graph g = new Graph( );
 		g.in = g.newS();
 		g.out = g.newS();
-		T<State,Transition> t = g.connect(g.in, g.out);
+		T t = g.connect(g.in, g.out);
 		t.implicit = false;
 		t.name= name;
-		t.capture  =capture;
-		t.types = types;
 		return g;
-	}
-	
-	
-		  
-	
-
-	public Set<Transition> getTransitions() {
-		Set<Transition> set = new HashSet<Transition>();
-		for (T<State,Transition> t : transitions)
-			set.add(t.transition);
-		return set;
-	}
-
-	public Set<State> getStates() {
-		Set<State> set = new HashSet<State>();
-		for (S<State,Transition> s : states)
-			set.add(s.state);
-		return set;
 	}
 	
 	public void graph(String name) throws IOException {

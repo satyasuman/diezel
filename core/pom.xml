@@ -14,6 +14,12 @@
 			<type>jar</type>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>net.ericaro</groupId>
+			<artifactId>diezel-annotations</artifactId>
+			<version>${project.version}</version>
+			<type>jar</type>
+		</dependency>
 	</dependencies>
 
 	<properties>
@@ -148,21 +154,6 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
-		<!--
-        -->
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-webdav</artifactId>
-				<version>1.0-beta-2</version>
-			</extension>
-		</extensions>
-
 	</build>
-
-
-
-
-
 </project>
 

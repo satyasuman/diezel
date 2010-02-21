@@ -5,7 +5,7 @@ package net.ericaro.diezel.core.gen;
  * @author eric
  *
  */
-public class StaticGen extends Gen {
+public class StaticBlock extends Gen {
 
 	private String codeBlock;
 
@@ -19,7 +19,7 @@ public class StaticGen extends Gen {
 	 * @param code
 	 * @return
 	 */
-	public StaticGen code(String code){
+	public StaticBlock code(String code){
 		this.codeBlock = code;
 		return this;
 	}

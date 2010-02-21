@@ -5,7 +5,7 @@ package net.ericaro.diezel.core.gen;
  * @author eric
  *
  */
-public class ImportGen extends Gen {
+public class Import extends Gen {
 
 	private String importedClass; // imported type
 	private boolean staticImport;
@@ -20,7 +20,7 @@ public class ImportGen extends Gen {
 	 * @param name
 	 * @return
 	 */
-	public ImportGen importStatic(String name) {
+	public Import importStatic(String name) {
 		this.staticImport = true;
 		this.importedClass= name;
 		return this;
@@ -30,7 +30,7 @@ public class ImportGen extends Gen {
 	 * @param name
 	 * @return
 	 */
-	public ImportGen importClass(String name) {
+	public Import importClass(String name) {
 		this.staticImport = false;
 		this.importedClass= name;
 		return this;

@@ -5,7 +5,7 @@ package net.ericaro.diezel.core.gen;
  * @author eric
  *
  */
-public class InnerClassGen extends ClassGen {
+public class InnerClass extends Class {
 
 
 }
