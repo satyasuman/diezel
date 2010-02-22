@@ -32,6 +32,6 @@ public class BuilderParserTest extends TestCase {
 	
 	public void testGen() throws Exception {
 		// generation fail cause exeception
-		Builder.generate(BuilderGen.class,new File("./target/test-generated-sources/javacc/"));
+		DiezelGenerator.generate(BuilderGen.class,new File("./target/test-generated-sources/javacc/"));
 	}
 }

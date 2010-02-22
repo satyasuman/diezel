@@ -3,7 +3,7 @@ package net.ericaro.diezel.core;
 import java.io.File;
 import java.io.IOException;
 
-import net.ericaro.diezel.core.builder.Builder;
+import net.ericaro.diezel.core.builder.DiezelGenerator;
 import net.ericaro.diezel.core.parser.ParseException;
 
 
@@ -22,7 +22,7 @@ public class Diezel {
 	public static void generate(File dir, Class... classes) throws DiezelException{
 		for (Class c: classes)
 			try {
-				Builder.generate(c, dir);
+				DiezelGenerator.generate(c, dir);
 			} catch (ParseException e) {
 				throw new DiezelException("Error while parsing "+c+" workfow: \n"+ e.getMessage(), e);
 			} catch (IOException e) {

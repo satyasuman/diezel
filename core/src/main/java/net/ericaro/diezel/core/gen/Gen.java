@@ -85,7 +85,7 @@ public abstract class Gen {
 		return _(keyword, list, ",");
 	}
 
-	/** if the list is not empty, append the keyword and each each separted by the separator.
+	/** if the list is not empty, append the keywords and the list's items separated by the separator.
 	 * Useful for statements like "throws Exception, Throwable".
 	 * 
 	 * @param keyword
@@ -100,12 +100,17 @@ public abstract class Gen {
 		}
 		return this;
 	}
-	/** Generate the capture definition
+	/** equivalent to 
+	 * 
+	return this._opt(open, close, list, ",");
 	 * 
 	 */
 	protected <G extends Gen> Gen _opt(String open, String close, List<G> list) {
 	return this._opt(open, close, list, ",");
 	}
+	/** if the list is not empty generate the "open" list's items separated by the separator, and the "close"
+	 * 
+	 */
 	protected <G extends Gen> Gen _opt(String open, String close, List<G> list, String sep) {
 		list = clean(list);
 		if (!list.isEmpty())

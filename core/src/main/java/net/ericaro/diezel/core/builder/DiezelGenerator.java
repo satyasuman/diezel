@@ -27,49 +27,60 @@ import net.ericaro.diezel.core.parser.Graph.S;
 import net.ericaro.diezel.core.parser.Graph.T;
 
 /**
- * Reflexive information about a builder
+ *  Reads an actual Builder.class, extract all reflexive information in types, and annotations, and get ready for generation.
+ *  By convention, the generated classes are called guides.
  * 
- * 
- * A builder is a dsl, an type, and a collection of transitions.
  * 
  * @author eric
  * 
  */
-public class Builder<E> {
+public class DiezelGenerator {
 
+	/** QName of the Guiders package. By default, use the target one.
+	 */
 	transient private String packageName;
-	transient private Type type;
-	transient private String dsl;
+	/** The workflow expressed in the workflow language.
+	 */
+	transient private String workflow;
+	/** While parsing the target recursively parse each method and convert them into transition
+	 */
 	transient private Set<Transition> transitions = new HashSet<Transition>();
+	/** The exit state builderType. A workflow can EXIT, is that case it returns a instance located in the guide class, with returnType as builderType, and returnName as name.
+	 */
 	transient private Type returnType = new Type(); // void by default
-	transient private Graph graph;
-	transient private String builderName;
+	/** The exit state builderType. A workflow can EXIT, is that case it returns a instance located in the guide class, with returnType as builderType, and returnName as name.
+	 */
 	transient private String returnName;
+	/** After parsing the workflow as string, a Graph of state and transition is generated.
+	 */
+	transient private Graph graph;
+	/** each guide contains the builder instance as a field of builderType builderType, and name builderName
+	 */
+	transient private String builderName;
+	/** each guide contains the builder instance as a field of builderType builderType, and name builderName
+	 */
+	transient private Type builderType;
+	/** Every guide class generate is uses the guidebasename as name + an index to make them unique.
+	 */
 	transient private String guideBaseName;
+	
+	/** A workflow is "callable" (from another workflow) if it can return back to where it was.
+	 */
 	transient private boolean callable;
+	/** the header use for each generated file. by default, we provide an old but nice ascii art saying that it was generated with Diezel ;-)
+	 */
 	transient private String header;
 
-	public String getBuilderName() {
-		return builderName;
+	// all field are made transient because they all are deduced from the parsed class.
+	// all accessor are made package to be accessed from the Transition, without polluting the real public interface of
+	// this object
+
+
+	public static <T> DiezelGenerator parse(Class<T> builder) {
+		return new DiezelGenerator(builder);
 	}
 
-	public void setBuilderName(String builderName) {
-		this.builderName = builderName;
-	}
-
-	public String getReturnName() {
-		return returnName;
-	}
-
-	public void setReturnName(String returnName) {
-		this.returnName = returnName;
-	}
-
-	public static <T> Builder<T> parse(Class<T> builder) {
-		return new Builder<T>(builder);
-	}
-
-	public Builder(Class<E> builder) {
+	public DiezelGenerator(Class<?> builder) {
 		init(builder);
 	}
 
@@ -82,11 +93,11 @@ public class Builder<E> {
 		return type;
 	}
 
-	protected void init(Class<E> builder) {
+	protected void init(Class<?> builder) {
 		// gets all information.
-		// abuilder is a dsl, a collection of transitions.
+		// abuilder is a workflow, a collection of transitions.
 		Workflow d = builder.getAnnotation(Workflow.class);
-		dsl = d.value();
+		workflow = d.value();
 		builderName = d.builderInstance();
 		callable = d.callable();
 		guideBaseName = d.guideBaseName();
@@ -97,8 +108,8 @@ public class Builder<E> {
 			guideBaseName = builder.getSimpleName() + "Guide";
 		}
 
-		type = typeOf(builder);
-		List<Type> l = type.getGenerics();
+		builderType = typeOf(builder);
+		List<Type> l = builderType.getGenerics();
 		if (!l.isEmpty())
 			returnType = l.get(0);
 		packageName = builder.getPackage().getName();
@@ -118,10 +129,9 @@ public class Builder<E> {
 		}
 	}
 
-	@net.ericaro.diezel.annotations.Transition
 	public void buildGraph() throws ParseException {
 		GraphBuilder db = new GraphBuilder();
-		RegExp.parse(dsl, db);
+		RegExp.parse(workflow, db);
 		this.graph = db.getGraph();
 	}
 
@@ -145,10 +155,10 @@ public class Builder<E> {
 				stateType.type(guideBaseName);
 			else
 				stateType.type(guideBaseName + ++i);
-			if (type.getGenerics().isEmpty() && callable) {
+			if (builderType.getGenerics().isEmpty() && callable) {
 				stateType.generics(returnType);
 			} else {
-				stateType.generics(type.getGenerics());
+				stateType.generics(builderType.getGenerics());
 			}
 			stateTypes.put(s.id, stateType);
 			System.out.println("preparing " + stateType);
@@ -165,7 +175,7 @@ public class Builder<E> {
 				Type toType = stateTypes.get(t.out.id);
 				System.out.println("\tto " + toType);
 				Transition trans = index.get(t.name);
-				cu.methods(trans.getSimpleTransition(toType, this));
+				cu.methods(trans.getTransitionMethod(toType, this));
 			}
 			fileunits.add(cu);
 		}
@@ -178,7 +188,7 @@ public class Builder<E> {
 
 	public static void generate(Class builder, File dir) throws ParseException,
 			IOException {
-		Builder b = Builder.parse(builder);
+		DiezelGenerator b = DiezelGenerator.parse(builder);
 		b.buildGraph();
 		b.toFile(dir);
 
@@ -194,9 +204,9 @@ public class Builder<E> {
 				packageName);
 		c.mod(Modifier.Public).asClass().type(type);
 
-		Type targetType = this.type;
+		Type targetType = this.builderType;
 		if (callable && !returnType.isVoid()) {
-			// field and constructor with return type
+			// field and constructor with return builderType
 			c.fields(new Field().mod(Modifier.Private).type(returnType).name(returnName));
 			Constructor cons = new Constructor().container(type.getName());
 			cons.mod(Modifier.Public).param(targetType, returnType).body(
@@ -216,14 +226,66 @@ public class Builder<E> {
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("dsl: ").append(dsl).append("\n");
+		sb.append("workflow: ").append(workflow).append("\n");
 		sb.append("package: ").append(packageName).append("\n");
-		sb.append("type: ");
-		type.gen(sb);
+		sb.append("builderType: ");
+		builderType.gen(sb);
 		sb.append("\n");
 		for (Transition t : transitions) {
 			sb.append("transition:\n").append(t).append("\n");
 		}
 		return sb.toString();
 	}
+
+	
+	// accessors 
+	
+	
+	String getPackageName() {
+		return packageName;
+	}
+
+	String getWorkflow() {
+		return workflow;
+	}
+
+	Set<Transition> getTransitions() {
+		return transitions;
+	}
+
+	Type getReturnType() {
+		return returnType;
+	}
+
+	String getReturnName() {
+		return returnName;
+	}
+
+	Graph getGraph() {
+		return graph;
+	}
+
+	String getBuilderName() {
+		return builderName;
+	}
+
+	Type getBuilderType() {
+		return builderType;
+	}
+
+	String getGuideBaseName() {
+		return guideBaseName;
+	}
+
+	boolean isCallable() {
+		return callable;
+	}
+
+	String getHeader() {
+		return header;
+	}
+	
+	
+	
+	
 }
