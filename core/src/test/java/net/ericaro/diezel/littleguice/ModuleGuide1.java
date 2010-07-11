@@ -9,25 +9,19 @@
  ))______________________________(( 
 Diezel 1.0.0 Generated.
 
-*/ package  net.ericaro.diezel;
+*/ package  net.ericaro.diezel.littleguice;
 /**
 */
-public class CarGuide5<T>{
-private T returnGuide;
-private net.ericaro.diezel.Car builder;
+public class ModuleGuide1<ReturnType, T>{
+private ReturnType returnGuide;
+private net.ericaro.diezel.littleguice.Module<T> builder;
 
 /***/
-public CarGuide5(net.ericaro.diezel.Car arg0, T arg1){
+public ModuleGuide1(net.ericaro.diezel.littleguice.Module<T> arg0, ReturnType arg1){
 this.builder = arg0;this.returnGuide = arg1;} 
 
 /***/
-public CarGuide5(net.ericaro.diezel.Car arg0){
+public ModuleGuide1(net.ericaro.diezel.littleguice.Module<T> arg0){
 this.builder = arg0;} 
-
-/***/
-public CarGuide1<T> thermal(){
-builder.thermal();
-return new CarGuide1<T>(builder,returnGuide);
-} 
 
 }

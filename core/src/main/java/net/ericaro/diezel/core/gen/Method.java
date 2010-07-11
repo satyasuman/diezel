@@ -15,7 +15,7 @@ public class Method extends Gen {
 	protected Type returnType; // the fully qualified return type
 	protected List<Type> exceptions=new LinkedList<Type>(); // list of fully qualified exceptions (generics accepted)
 	protected List<Type> varTypes= new LinkedList<Type>();// list of arguments types
-	private List<Type> captureTypes; // list of generic capture like in public <T> toto( Class<T> arg)
+	private List<Type> captureTypes = new LinkedList<Type>(); // list of generic capture like in public <T> toto( Class<T> arg)
 	
 	/** Defines the javadoc for this method. Do not put leading and trailing comment marker (/ * and * /
 	 * 
@@ -73,7 +73,12 @@ public class Method extends Gen {
 	 * @return
 	 */
 	public Method captures(Type... captureTypes) {
-		this.captureTypes= Arrays.asList(captureTypes);
+		this.captures( Arrays.asList(captureTypes) );
+		return this;
+	}
+	
+	public Method captures(List<Type> captureTypes) {
+		this.captureTypes.addAll( captureTypes );
 		return this;
 	}
 	
@@ -143,10 +148,7 @@ public class Method extends Gen {
 	 * 
 	 */
 	protected void captures() {
-		if (captureTypes!=null&& !captureTypes.isEmpty())
-		{
-			_("<")._(captureTypes, ",")._(">");
-		}
+		_opt("<", "> ", captureTypes);
 	}
 	
 	/** Generate the return type. null return type is converted into void

@@ -1,4 +1,4 @@
-package net.ericaro.diezel;
+package net.ericaro.diezel.car;
 
 import java.awt.Color;
 

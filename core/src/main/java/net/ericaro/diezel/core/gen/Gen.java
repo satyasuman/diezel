@@ -47,6 +47,17 @@ public abstract class Gen {
 			sb.append(o);
 		return this;
 	}
+	/** a ""gettext" like function, equivalent to append() execept that null String does nothing, repeat the String i times
+	 * 
+	 * @param o
+	 * @return
+	 */
+	protected Gen _(String o, int i) {
+		if (o != null)
+			for (int j = 0; j < i; j++) 
+				sb.append(o);
+		return this;
+	}
 	
 	protected <G extends Gen> Gen _(G... gens) {
 		return this._(Arrays.asList(gens));

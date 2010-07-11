@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import net.ericaro.diezel.annotations.CallType;
+import net.ericaro.diezel.core.gen.Cast;
 import net.ericaro.diezel.core.gen.Method;
 import net.ericaro.diezel.core.gen.Modifier;
 import net.ericaro.diezel.core.gen.Type;
@@ -33,6 +34,8 @@ public class Transition {
 	/** the list of the method parameters. converted into Type for easier manipulation and generation
 	 */
 	private List<Type> parameters = new LinkedList<Type>();
+
+	private List<Type> typeParameters = new LinkedList<Type>();
 	/** the method return type
 	 */
 	private Type methodReturnType;
@@ -40,8 +43,21 @@ public class Transition {
 	 */
 	private CallType callType;
 
-	Transition(){}
+	private Type builderType;
+	private Type returnType;
+	private Class builder;
 	
+	
+
+	
+	public Transition(Class builder, Type returnType, java.lang.reflect.Method m) {
+		super();
+		this.builder = builder;
+		this.builderType = DiezelGenerator.typeOf(builder);
+		this.returnType = returnType;
+		parse(m);
+	}
+
 	/** Package method used by the BuilderParser to delegate every method parsing
 	 * @param m the actual method to be analyzed
 	 */
@@ -49,7 +65,8 @@ public class Transition {
 		// fully parse it and get as much as information as needed
 		// read parameters always available
 		name= m.getName() ; 
-		methodReturnType = DiezelGenerator.typeOf(m.getReturnType());
+		
+		methodReturnType = DiezelGenerator.typeOf(m.getGenericReturnType());
 		
 		callType = CallType.CONTINUE ; // set the default value
 		
@@ -63,10 +80,13 @@ public class Transition {
 			alias = name;
 		
 		// parse exceptions, and parameter types
-		for (Class c: m.getExceptionTypes())
+		for (java.lang.reflect.Type c: m.getGenericExceptionTypes())
 			exceptions.add(DiezelGenerator.typeOf(c));
 		
-		for (Class c: m.getParameterTypes())
+		for (java.lang.reflect.Type c: m.getTypeParameters() )
+			typeParameters.add(DiezelGenerator.typeOfDefinition(c));
+		
+		for (java.lang.reflect.Type c: m.getGenericParameterTypes())
 			parameters.add(DiezelGenerator.typeOf(c));
 		
 		// missing catching parameters like in : public <T> toString(T t)
@@ -79,12 +99,12 @@ public class Transition {
 	 * @param diezelGenerator the parent DiezelGenerator, used for global information on the workflow
 	 * @return
 	 */
-	public Method getTransitionMethod(Type nextGuideType, DiezelGenerator diezelGenerator){
+	public Method getTransitionMethod(State nextGuideState, DiezelGenerator diezelGenerator){
 		switch(callType){
-		case CONTINUE: return getContinueTransition(nextGuideType, diezelGenerator);
-		case RETURN: return getReturnTransition(nextGuideType, diezelGenerator);
-		case EXIT: return getExitTransition(nextGuideType, diezelGenerator);
-		case CALL: return getCallTransition(nextGuideType, diezelGenerator);
+		case CONTINUE: return getContinueTransition(nextGuideState, diezelGenerator);
+		case RETURN: return getReturnTransition(nextGuideState, diezelGenerator);
+		case EXIT: return getExitTransition(nextGuideState, diezelGenerator);
+		case CALL: return getCallTransition(nextGuideState, diezelGenerator);
 		default: throw new RuntimeException("Unknown callType type"+ callType);
 		}
 	}
@@ -98,14 +118,19 @@ public class Transition {
 	 * @param diezelGenerator
 	 * @return
 	 */
-	protected Method getContinueTransition(Type nextGuideType, DiezelGenerator diezelGenerator){
+	protected Method getContinueTransition(State nextGuideState, DiezelGenerator diezelGenerator){
 		String builderName = diezelGenerator.getBuilderName();
 		String returnName = diezelGenerator.getReturnName();
-		Method m = new Method().mod(Modifier.Public).returns(nextGuideType)
-				.name(alias).param(parameters).except(exceptions);
+		Method m = new Method()
+		.mod(Modifier.Public)
+		.captures(typeParameters)
+		.returns(nextGuideState.getRuntimeType())
+		.name(alias).param(parameters).except(exceptions);
 		
 		String body = builderName+"."+name+"("+Method.varcall(parameters)+");\n";
-		body+="return new "+nextGuideType.toString()+"("+builderName+","+returnName +");\n";
+		body+="return new "+nextGuideState.getRuntimeType().toString()+"("
+				+new Cast(builderType)+ builderName+","
+				+new Cast(returnType)+ returnName +");\n";
 		m.body(body	);
 		return m;
 	}
@@ -117,9 +142,12 @@ public class Transition {
 	 * @param diezelGenerator
 	 * @return
 	 */
-	protected Method getReturnTransition(Type nextGuideType, DiezelGenerator diezelGenerator){
+	protected Method getExitTransition(State nextGuideState, DiezelGenerator diezelGenerator){
 		String builderName = diezelGenerator.getBuilderName();
-		Method m = new Method().mod(Modifier.Public).returns(methodReturnType )
+		Method m = new Method()
+		.mod(Modifier.Public)
+		.captures(typeParameters)
+		.returns(methodReturnType )
 		.name(alias).param(parameters).except(exceptions);
 		
 		String body = (methodReturnType.isVoid()?"":"return ")+builderName+"."+name+"("+Method.varcall(parameters)+");\n";
@@ -135,10 +163,14 @@ public class Transition {
 	 * @param diezelGenerator
 	 * @return
 	 */
-	protected Method getExitTransition(Type returnType, DiezelGenerator diezelGenerator){
+	protected Method getReturnTransition(State returnState, DiezelGenerator diezelGenerator){
+		Type returnType = returnState.getRuntimeType();
 		assert diezelGenerator.isCallable(): "cannot use CallType.EXIT on a workflow that is not callable. set @Workflow(callable=true) ";
 		String returnName = diezelGenerator.getReturnName();
-		Method m = new Method().mod(Modifier.Public).returns(diezelGenerator.getReturnType())
+		Method m = new Method()
+		.mod(Modifier.Public)
+		.captures(typeParameters)
+		.returns(diezelGenerator.getReturnType())
 		.name(alias).param(parameters).except(exceptions);
 		
 		String body = "return "+returnName+";\n";
@@ -159,12 +191,17 @@ public class Transition {
 	 * @param diezelGenerator
 	 * @return
 	 */
-	protected Method getCallTransition(Type nextGuideType, DiezelGenerator diezelGenerator){
+	protected Method getCallTransition(State nextGuideState, DiezelGenerator diezelGenerator){
+		Type nextGuideType = nextGuideState.getRuntimeType();
 		String builderName = diezelGenerator.getBuilderName();
+		
 		LinkedList<Type> p = new LinkedList<Type>(parameters);
 		p.remove(0);// remove the first param: it's always the one that is used to pass the return type
 		//later I'll remove the first catch too
-		Method m = new Method().mod(Modifier.Public).returns(methodReturnType )
+		Method m = new Method()
+		.mod(Modifier.Public)
+		.captures(typeParameters)
+		.returns(methodReturnType )
 		.name(alias).param(p).except(exceptions);
 		
 		// build the next state "as usual"

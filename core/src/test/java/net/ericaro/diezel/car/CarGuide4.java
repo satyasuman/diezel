@@ -9,25 +9,19 @@
  ))______________________________(( 
 Diezel 1.0.0 Generated.
 
-*/ package  net.ericaro.diezel;
+*/ package  net.ericaro.diezel.car;
 /**
 */
-public class CarGuide1<T>{
+public class CarGuide4<T>{
 private T returnGuide;
-private net.ericaro.diezel.Car builder;
+private net.ericaro.diezel.car.Car builder;
 
 /***/
-public CarGuide1(net.ericaro.diezel.Car arg0, T arg1){
+public CarGuide4(net.ericaro.diezel.car.Car arg0, T arg1){
 this.builder = arg0;this.returnGuide = arg1;} 
 
 /***/
-public CarGuide1(net.ericaro.diezel.Car arg0){
+public CarGuide4(net.ericaro.diezel.car.Car arg0){
 this.builder = arg0;} 
-
-/***/
-public CarGuide4<T> color(java.awt.Color arg0){
-builder.setColor(arg0);
-return new CarGuide4<T>(builder,returnGuide);
-} 
 
 }

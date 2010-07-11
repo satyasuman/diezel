@@ -9,25 +9,19 @@
  ))______________________________(( 
 Diezel 1.0.0 Generated.
 
-*/ package  net.ericaro.diezel;
+*/ package  net.ericaro.diezel.wildcards;
 /**
 */
-public class CarGuide3<T>{
-private T returnGuide;
-private net.ericaro.diezel.Car builder;
+public class WildCardTestGuide1<ReturnType, U extends java.lang.annotation.Annotation>{
+private ReturnType returnGuide;
+private net.ericaro.diezel.wildcards.WildCardTest<U> builder;
 
 /***/
-public CarGuide3(net.ericaro.diezel.Car arg0, T arg1){
+public WildCardTestGuide1(net.ericaro.diezel.wildcards.WildCardTest<U> arg0, ReturnType arg1){
 this.builder = arg0;this.returnGuide = arg1;} 
 
 /***/
-public CarGuide3(net.ericaro.diezel.Car arg0){
+public WildCardTestGuide1(net.ericaro.diezel.wildcards.WildCardTest<U> arg0){
 this.builder = arg0;} 
-
-/***/
-public CarGuide1<T> electrical(){
-builder.electrical();
-return new CarGuide1<T>(builder,returnGuide);
-} 
 
 }

@@ -2,6 +2,7 @@ package net.ericaro.diezel.core.parser;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -269,29 +270,51 @@ public class Graph {
 			remove(t);
 			S in = t.in;
 			S out = t.out;
-			// copy all t from out to in
-			for(T outT: out.ins){ //for each trans in the next state
-				//copy it to in
-				T newt = newT();
-				outT.copyTo(newt); // basic copy
-				newt.in = t.in; // move it's start
-				//add it to the both state ends
-				in.outs.add(newt);
-				newt.out.ins.add(newt);
+			if (in == out ){
+				t=nextImplicit();
+				continue;
 			}
+			
+			// alg: I'm going to remove out: false
+			// evry incoming to out will be transferred to in,
+			// every outgoing will be transfered from in
+			/*for(T incoming: out.ins)
+				incoming.out=in;
+			
+			for(T outgoing: out.outs)
+				outgoing.in=in;
+			remove(out);
+			*/
+			//alg: simply copy the out out interface into the in out interface
+			for(T outout: out.outs){
+				T copied = newT();
+				outout.copyTo(copied);
+				// now changes the connections
+				copied.in = in;
+				in.outs.add(copied);
+			}
+			
+			
+			
+			
 			t= nextImplicit();
+			//log(this);
 		}
 	}
 
 	
 
 	
-
+	static int debugCount=0;
+	public static void log(Graph g){
+		try {	g.graph("target/debug"+ ++debugCount);		} catch (IOException e) {}
+	}
 	
 
 	public static  Graph opt(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.in, g.out);
+		log(g);
 		return g;
 	}
 
@@ -310,6 +333,7 @@ public class Graph {
 		/*
 		for (int i = 0; i < last; i++)
 			g.shortcut(ts[i]);/**/
+		log(g);
 		return g;
 	}
 	
@@ -321,11 +345,13 @@ public class Graph {
 		// simply add a null link between in and out
 		g.connect(g.in, g.out);		// removing this line forces a ()+
 		g.connect(g.out, g.in);
+		log(g);
 		return g;
 	}
 	public static  Graph iter_once(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.out, g.in);
+		log(g);
 		return g;
 	}
 
@@ -339,6 +365,7 @@ public class Graph {
 			g.connect(g.in, graphs[i].in);
 			g.connect(graphs[i].out, g.out);
 		}
+		log(g);
 		return g;
 	}
 	
@@ -374,6 +401,7 @@ public class Graph {
 			g.connect(banged.out, g.out);
 		}
 		g.reduce();
+		log(g);
 		return g;
 	}
 	
@@ -385,14 +413,26 @@ public class Graph {
 		T t = g.connect(g.in, g.out);
 		t.implicit = false;
 		t.name= name;
+		log(g);
 		return g;
 	}
 	
 	public void graph(String name) throws IOException {
 		File f = new File("./" + name + ".dot");
 		FileUtil.printFile(f, toString(), true);
-		Runtime.getRuntime().exec(
-				"dot " + name + ".dot -Tpng -o " + name + ".png");
+		PrintStream pout = System.out;
+		try {
+			Process r = Runtime.getRuntime().exec(
+					"dot " + name + ".dot -Grankdir=LR -Tpng -o " + name + ".png");
+			System.setOut(new PrintStream(r.getOutputStream()));
+			r.waitFor();
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		finally{
+			System.setOut(pout);
+		}
 	}
 
 	

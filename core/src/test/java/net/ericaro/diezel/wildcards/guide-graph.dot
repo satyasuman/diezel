@@ -1,0 +1,5 @@
+digraph {
+S3[shape=point];
+S2[shape=point];
+S2 -> S3[label="a"];
+}

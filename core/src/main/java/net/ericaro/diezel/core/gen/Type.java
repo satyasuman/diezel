@@ -14,8 +14,11 @@ public class Type extends Gen {
 	public static final Type Void = new Type();
 
 	private String type="void"; // FQN of this field.
-	protected List<Type> generics = new LinkedList<Type>(); 
-	protected boolean array=false;
+	protected List<Type> generics = new LinkedList<Type>();
+	protected List<Type> upperBounds= new LinkedList<Type>();
+	protected List<Type> lowerBounds= new LinkedList<Type>();
+	
+	protected int array=0;
 	protected boolean voidType=true;
 	
 	public Type(){}
@@ -39,6 +42,10 @@ public class Type extends Gen {
 		this.voidType = "void".equals(type) ;
 		return this;
 	}
+	public Type array(){
+		this.array++; 
+		return this;
+	}
 	
 	/** set the list of generics
 	 * 
@@ -47,11 +54,6 @@ public class Type extends Gen {
 	 */
 	public Type generics(List<Type> parameterizedReturn) {
 		this.generics.addAll(parameterizedReturn);
-		return this;
-	}
-	
-	public Type array(){
-		this.array = true;
 		return this;
 	}
 	
@@ -67,6 +69,44 @@ public class Type extends Gen {
 	
 	public List<Type> getGenerics(){return generics;}
 	
+	/** set the list of upperbounds
+	 * 
+	 * @param parameterizedReturn
+	 * @return
+	 */
+	public Type upperBound(List<Type> bounds) {
+		this.upperBounds.addAll(bounds);
+		return this;
+	}
+	
+	/** 
+	 * 
+	 * @param supers
+	 * @return
+	 */
+	public Type upperBound(Type... bound) {
+		this.upperBound(Arrays.asList(bound));
+		return this;
+	}
+	/** set the list of lowerbounds
+	 * 
+	 * @param parameterizedReturn
+	 * @return
+	 */
+	public Type lowerBound(List<Type> bounds) {
+		this.lowerBounds.addAll(bounds);
+		return this;
+	}
+	
+	/** 
+	 * 
+	 * @param supers
+	 * @return
+	 */
+	public Type lowerBound(Type... bound) {
+		this.lowerBound(Arrays.asList(bound));
+		return this;
+	}
 	
 	public boolean isVoid(){return voidType;} 
 	
@@ -75,7 +115,7 @@ public class Type extends Gen {
 		if (voidType) 
 			_("void");
 		else
-			_(type)._opt("<",">", generics)._(array?"[]":"");
+			_(type)._opt("<",">", generics)._("[]",array)._("super", lowerBounds)._("extends", upperBounds);
 	}
 
 	public String getName() {
