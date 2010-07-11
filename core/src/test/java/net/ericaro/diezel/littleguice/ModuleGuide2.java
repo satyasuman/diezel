@@ -24,22 +24,4 @@ this.builder = arg0;this.returnGuide = arg1;}
 public ModuleGuide2(net.ericaro.diezel.littleguice.Module<T> arg0){
 this.builder = arg0;} 
 
-/***/
-public ModuleGuide1<ReturnType, T> toInstance(java.lang.String arg0){
-builder.toInstance(arg0);
-return new ModuleGuide1<ReturnType, T>((net.ericaro.diezel.littleguice.Module<T>) builder,(ReturnType) returnGuide);
-} 
-
-/***/
-public ModuleGuide4<ReturnType, T> to(java.lang.Class<? extends T> arg0){
-builder.to(arg0);
-return new ModuleGuide4<ReturnType, T>((net.ericaro.diezel.littleguice.Module<T>) builder,(ReturnType) returnGuide);
-} 
-
-/***/
-public ModuleGuide4<ReturnType, T> toProvider(java.lang.String arg0){
-builder.toProvider(arg0);
-return new ModuleGuide4<ReturnType, T>((net.ericaro.diezel.littleguice.Module<T>) builder,(ReturnType) returnGuide);
-} 
-
 }

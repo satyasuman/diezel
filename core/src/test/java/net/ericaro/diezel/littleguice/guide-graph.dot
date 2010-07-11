@@ -1,17 +1,17 @@
 digraph {
+S36[shape=circle];
 S51[shape=point];
 S50[shape=circle];
 S6[shape=circle];
 S2[shape=point];
-S36[shape=circle];
+S50 -> S36[label="toProvider"];
 S50 -> S51[label="toInstance"];
 S6 -> S50[label="annotatedWith"];
-S36 -> S51[label="asEagerSingleton"];
+S36 -> S51[label="asSingleton"];
 S6 -> S51[label="toInstance"];
-S50 -> S36[label="toProvider"];
+S36 -> S51[label="asEagerSingleton"];
+S6 -> S36[label="to"];
 S6 -> S36[label="toProvider"];
 S50 -> S36[label="to"];
-S6 -> S36[label="to"];
 S2 -> S6[label="bind"];
-S36 -> S51[label="asSingleton"];
 }

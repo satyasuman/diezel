@@ -24,4 +24,16 @@ this.builder = arg0;this.returnGuide = arg1;}
 public ModuleGuide1(net.ericaro.diezel.littleguice.Module<T> arg0){
 this.builder = arg0;} 
 
+/***/
+public ModuleGuide2<ReturnType, T> asSingleton(){
+builder.asSingleton();
+return new ModuleGuide2<ReturnType, T>((net.ericaro.diezel.littleguice.Module<T>) builder,(ReturnType) returnGuide);
+} 
+
+/***/
+public ModuleGuide2<ReturnType, T> asEagerSingleton(){
+builder.asEagerSingleton();
+return new ModuleGuide2<ReturnType, T>((net.ericaro.diezel.littleguice.Module<T>) builder,(ReturnType) returnGuide);
+} 
+
 }
