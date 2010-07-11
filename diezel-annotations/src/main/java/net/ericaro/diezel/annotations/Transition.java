@@ -15,8 +15,8 @@ import java.lang.annotation.Target;
  * You can use the <pre>alias</pre> attribute of the annotation.
  * </li>
  * <li><ul>
- * <li>End the workflow by returning the built type: use CallType.RETURN</li> 
- * <li>End the workflow by return to the calling state: use CallType.EXIT</li> 
+ * <li>End the workflow by returning the built type: use CallType.EXIT</li> 
+ * <li>End the workflow by return to the calling state: use CallType.RETURN</li> 
  * <li>Simply continue the workflow: use CallType.CONTINUE</li> 
  * <li>Call another workflow as a subroutine, user will start the new workflow, and when it <pre>exits</pre> he will continue in this workflow: use CallType.CALL</li> 
  *</ul>

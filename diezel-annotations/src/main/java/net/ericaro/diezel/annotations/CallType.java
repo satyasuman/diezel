@@ -9,14 +9,13 @@ public enum CallType {
 	/** The transition will return the result of the builder method
 	 * 
 	 */
-	RETURN,
-	/** The Transition will call the builder method, and return the returnType (this mark the end of the workflow)
+	EXIT,
+	/** The Transition will call the builder method, and return the returnType (as previously pass in a "call" transition)
 	 * 
 	 */
-	EXIT,
-	/** The Transition will call the builder method passing it the next state in the workflow, and will return
-	 * the result of the builder method. Used to start, an embedded flow, and provide support for
-	 * context free language.
+	RETURN,
+	/** The Transition will call the builder method and return another builder passing it the next state as the "return type". You can see
+	 * it either as a "subroutine call", or as a start, for a context free grammar.
 	 * 
 	 */
 	CALL

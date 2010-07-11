@@ -11,8 +11,8 @@ import java.lang.annotation.Target;
  * 
  * @param guideBaseName is the root name of all Guide generated classes. If you use an XXXBuilder it's a good practice to call it XXXGuide. By convention, XXXGuide will be the first guide to call to start a workflow, other Guides are called XXXGuide1,XXXGuide2,... 
  * @param builderInstance is the local java name of the builder instance. There is no real reason to change it.
- * @param returnGuideInstance is the local java name of the instance that might be used when using the CallType.Exit. There is no real reason to change it.
- * @param callable to tell to the generator to build guides that can handle the CallType.EXIT. Top level guides don't need to be callable.
+ * @param returnGuideInstance is the local java name of the instance that might be used when using the CallType.RETURN. There is no real reason to change it.
+ * @param callable to tell to the generator to build guides that can handle the CallType.RETURN. Top level guides don't need to be callable, but it doesn't hurt.
  * 
  * @author eric
  *
