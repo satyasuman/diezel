@@ -20,15 +20,18 @@ import net.ericaro.diezel.core.builder.FileUtil;
  * 
  * It provides some basic operation, to make it possible to have a BNF
  * definition of a workflow. Handled object are moved during graph operations.
- * At the end we provide a way to generate
  * 
  * @author eric
  * 
- *@TODO need cleaning/commenting
  */
 public class Graph {
-	static int ids = 0;
+	static int ids = 0; // dead simple id generator
 
+	/** S stands for "state", it's a node.
+	 * 
+	 * @author eric
+	 *
+	 */
 	public static class S {
 		public int id;
 		List<T> ins = new ArrayList<T>();
@@ -38,12 +41,20 @@ public class Graph {
 			id = ++ids;
 		}
 
+		/** to dot graphiz protocol
+		 * 
+		 * @param shape
+		 * @return
+		 */
 		public String toNode(String shape) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("S").append(id).append("[shape=" + shape + "]");
 			return sb.toString();
 		}
-
+		/** also part of the graphiz protocol: return the .dot name for this node
+		 * 
+		 * @return
+		 */
 		public String ref() {
 			return "S" + id;
 		}
@@ -51,20 +62,32 @@ public class Graph {
 		public String toString() {
 			return ref();
 		}
-
 	}
 
+	/** t stands for Transition, it's in fact an edge.
+	 * 
+	 * @author eric
+	 *
+	 */
 	public static class T {
-		public S in;
-		public S out;
-		int id;
-		public String name;
-		public boolean implicit = true;
+		int id; 
+		public S in; // in state
+		public S out; // out state
+		public String name; // transition name
+		public boolean implicit = true; // some transition are created "implicit".
+		/* An implicit transition is a an artificial transition created during the graph creation process,
+		 * because for some operations it's impossible to create the graph without "artifical", and transient edges.
+		 * ther are intended to be "reduce" at the end.
+		 * */
 
 		public T() {
-			id = ++ids;
+			id = ++ids; // dead simple unique id handler.
 		}
 
+		/** part of the graph viz protocol
+		 * 
+		 * @return
+		 */
 		public String toEdge() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(in.ref()).append(" -> ").append(out.ref()).append("[")
@@ -80,14 +103,21 @@ public class Graph {
 			return toEdge();
 		}
 		
-		public void copyTo(T nt){
-			nt.name = name;
-			nt.implicit= implicit ;
-			nt.in = in;
-			nt.out = out;
+		/** copy all fields (but the id) of this into that
+		 * 
+		 * @param that
+		 */
+		public void copyTo(T that){
+			that.name = name;
+			that.implicit= implicit ;
+			that.in = in;
+			that.out = out;
 		}
 	}
 
+	/**
+	 *   print the current graph in a graphviz format.
+	 */
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("digraph {\n");
@@ -100,10 +130,10 @@ public class Graph {
 		for (T t : transitions)
 			sb.append(t.toEdge()).append(";\n");
 		sb.append("}\n");
-
 		return sb.toString();
 	}
 
+	// a graph is a set of transitions, states, a start node, and an end node.
 	public Set<T> transitions = new HashSet<T>();
 	public Set<S> states = new HashSet<S>();
 	public S in;
@@ -114,12 +144,18 @@ public class Graph {
 	{
 		this.id = ++ids;
 	}
+	/** use the id as graph identifier
+	 * 
+	 */
 	@Override
 	public int hashCode() {
 		return id;
 	}
 
-
+	
+	/** clone this graph
+	 * 
+	 */
 	public Graph clone() {
 		Graph g = new Graph();
 		Map<S, S> old2new = new HashMap<S, S>();
@@ -133,18 +169,32 @@ public class Graph {
 		return g;
 	}
 
+	/** create and append a node, unconnected, to this graph
+	 * 
+	 * @return
+	 */
 	public S newS() {
 		S s = new S();
 		states.add(s);
 		return s;
 	}
 
+	/** create and append a transition, unconnected, to this graph
+	 * 
+	 * @return
+	 */
 	public T newT() {
 		T t = new T();
 		transitions.add(t);
 		return t;
 	}
 
+	/** connect two nodes, and return the corresponding transition.
+	 * 
+	 * @param in
+	 * @param out
+	 * @return
+	 */
 	public T connect(S in, S out) {
 		T t = newT();
 		t.in = in;
@@ -154,6 +204,12 @@ public class Graph {
 		return t;
 	}
 
+	/** clone, or get the already clone node, in the old2new map.
+	 * 
+	 * @param s
+	 * @param old2new
+	 * @return
+	 */
 	private S clone(S s, Map<S, S> old2new) {
 		if (!old2new.containsKey(s)) {
 			S s2 = newS();
@@ -163,6 +219,12 @@ public class Graph {
 
 	}
 
+	/** clone, or get the already clone edge, in the old2new map.
+	 * 
+	 * @param t
+	 * @param old2new
+	 * @return
+	 */
 	private T clone(T t, Map<S, S> old2new) {
 		T t2 = connect(clone(t.in, old2new), clone(t.out, old2new));
 		t2.implicit = t.implicit;
@@ -170,6 +232,10 @@ public class Graph {
 		return t;
 	}
 
+	/** remove a node, and disconnect (nullate) every transition linked to it.
+	 * 
+	 * @param s
+	 */
 	private void remove(S s) {
 		for (T t : s.ins)
 			if (t.out == s)
@@ -184,6 +250,10 @@ public class Graph {
 			out = null;
 	}
 
+	/** remove an edge, and also remove it from the node it is attached to.
+	 * 
+	 * @param t
+	 */
 	public void remove(T t) {
 		S in = t.in;
 		S out = t.out;
@@ -192,15 +262,20 @@ public class Graph {
 		transitions.remove(t);
 	}
 
-	
+	/** remove an implicit transition, so that the graph remain logically equivalent.
+	 * 
+	 * @param t
+	 */
 	public void shortcut(T t) {
 		S in = t.in;
 		S out = t.out;
 		
 		assert in.outs.size() == 1 || out.ins.size() == 1 : "cannot simplify graph using a Transition that is not a singleton";
 		assert t.implicit : "cannot simplify graph using a Transition that is not implicit";
-		// simple remove
+		// start removing the transition
 		remove(t);
+		
+		// and then merge both states
 
 		if (in.outs.size() == 0) { // remove in
 			out.ins.addAll(in.ins);// copy all incoming
@@ -230,22 +305,18 @@ public class Graph {
 
 	}
 
+	
+	/** append all states, and transitions from another graph. id are unique because the unique id generator is static.
+	 * 
+	 * @param g
+	 */
 	public void addAll(Graph g) {
 		states.addAll(g.states);
 		transitions.addAll(g.transitions);
 	}
 
-	
-
-	
-
 	/**
 	 * Remove all possible implicit links
-	 * 
-	 * @param <TransitionGenerator>
-	 * @param <GuideGenerator>
-	 * @param term
-	 * @param g
 	 */
 	public void reduce() {
 
@@ -263,7 +334,9 @@ public class Graph {
 		return null;
 	}
 	
-	//ALGS
+	/** totally remove all implicit links, if it is not possible (like in reduce) then every transition are moved around to make it possible.
+	 * 
+	 */
 	public void unimplicit(){
 		T t= nextImplicit();
 		while(t!=null){
@@ -305,12 +378,18 @@ public class Graph {
 	
 
 	
-	static int debugCount=0;
+	//static int debugCount=0;
 	public static void log(Graph g){
 		//try {	g.graph("target/debug"+ ++debugCount);		} catch (IOException e) {}
 	}
 	
-
+// STARTS THE TOP OPERATORS
+	
+	/** simply add a null link between in and out, so that the whole graph is made "optional"
+	 * 
+	 * @param g
+	 * @return
+	 */
 	public static  Graph opt(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.in, g.out);
@@ -318,9 +397,16 @@ public class Graph {
 		return g;
 	}
 
+	/** sequentially connect graphs togethers
+	 * 
+	 * @param graphs
+	 * @return
+	 */
 	public static  Graph seq(Graph... graphs) {
-		if( graphs.length==1) return graphs[0];
-		Graph g = new Graph();
+		if( graphs.length==1) return graphs[0]; // smart shortcut
+		
+		Graph g = new Graph(); // the resulting graph
+		
 		int last = graphs.length - 1;
 		T[] ts = new T[last];
 		for (int i = 0; i < graphs.length; i++)
@@ -330,9 +416,6 @@ public class Graph {
 
 		for (int i = 0; i < last; i++)
 			ts[i] = g.connect(graphs[i].out, graphs[i + 1].in);
-		/*
-		for (int i = 0; i < last; i++)
-			g.shortcut(ts[i]);/**/
 		log(g);
 		return g;
 	}
@@ -341,6 +424,11 @@ public class Graph {
 	
 	
 
+	/**
+	 * simply add a null link between out to in making it repeatable, and a link, just like opt, making it avoidable
+	 * @param g
+	 * @return
+	 */
 	public static  Graph iter(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.in, g.out);		// removing this line forces a ()+
@@ -348,6 +436,11 @@ public class Graph {
 		log(g);
 		return g;
 	}
+	/** simply add a null link between out to in making it repeatable, 
+	 * 
+	 * @param g
+	 * @return
+	 */
 	public static  Graph iter_once(Graph g) {
 		// simply add a null link between in and out
 		g.connect(g.out, g.in);
@@ -355,6 +448,11 @@ public class Graph {
 		return g;
 	}
 
+	/** connect graphs in parallel
+	 * 
+	 * @param graphs
+	 * @return
+	 */
 	public static  Graph sel(Graph... graphs) {
 		if( graphs.length==1) return graphs[0];
 		Graph g = new Graph( );
@@ -381,6 +479,12 @@ public class Graph {
 		subgraph.addAll(Arrays.asList(graphs));
 		return bang(subgraph);
 	}
+	/** A bang is explosive, use with care, propose a choice of graphs, and, then a choice of the same graphs minus the one just made.
+	 * it means that it forces the user to pass through all the transitions of the bang, but in the order it wants. 
+	 * 
+	 * @param graphs
+	 * @return
+	 */
 	static  Graph bang(Set<Graph> graphs) {
 		if (graphs.size() ==1) return graphs.iterator().next();
 		System.out.println("bang "+ graphs.size());
@@ -405,8 +509,10 @@ public class Graph {
 		return g;
 	}
 	
+	/** creates a new graph, with a single transition, named "name"
+	 * 
+	 */
 	public static   Graph term(String name) {
-		System.out.println("new Term "+name);
 		Graph g = new Graph( );
 		g.in = g.newS();
 		g.out = g.newS();

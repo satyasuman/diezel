@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://diezel.ericaro.net/2.0.0/" xmlns="http://diezel.ericaro.net/2.0.0/"
+	elementFormDefault="qualified">
+
+	<xs:complexType name="generic">
+		<xs:annotation>
+			<xs:documentation source="description">
+				a generic type is an
+				abstraction of a generic type in java, like U extends V&amp;U
+			</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="name" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation source="description">
+					generic type name, usually
+					U or V
+			</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="super" type="xs:string">
+			<xs:annotation>
+				<xs:documentation source="description">
+					type that follow the super
+					in the java generic syntax.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="extends" type="xs:string">
+			<xs:annotation>
+				<xs:documentation source="description">
+					type that follow the
+					extends in the java generic syntax.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+
+	<xs:element name="transitions">
+		<xs:annotation>
+			<xs:documentation source="description">
+				the set of transition, that
+				are referenced in the language expression
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="transition" minOccurs="1" maxOccurs="unbounded" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="transition">
+		<xs:annotation>
+			<xs:documentation source="description">
+				a transition is an
+				"abstract" method call that lead the EDSL engine from one state to
+				another.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="javadoc" type="xs:string"
+					default="EDSL transition generated with Diezel" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							javadoc content without
+							the /* and */
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="push" type="generic" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							add a generic type to
+							the next state. Useful to "catch" some actual
+							type.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="pull" type="generic" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							remove a generic type
+							when moving to the next step. Making this type
+							local.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="return" type="xs:string" default="void"
+					maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation source="description">
+							the actual return type
+							when this transition reaches an end.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="signature" type="xs:string" minOccurs="1"
+					maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation source="description">
+							the actual method
+							signature name(types) throws Exceptions"
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:all>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation source="description">
+						the transition name or
+						alias, as it is referenced in the language expression.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="diezel">
+		<xs:annotation>
+			<xs:documentation source="description">
+				diezel top level element.
+				Fully defines an Embedded Domain Specific
+				Language.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="package" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							java fully qualified
+							package name where to generate all the code.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="header" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							the file header for
+							every generated file.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="push" type="generic" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							push a generic type to the start node. This way it is possible to
+							return it at the end.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="guide" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation source="description">
+							base name for the default name for every state class.
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="expression" type="xs:string" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation source="description">
+							the expression that defines the edsl flow. example
+							"a|b,c,d?, e*"
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="transitions" minOccurs="1" />
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

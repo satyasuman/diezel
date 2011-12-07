@@ -176,13 +176,11 @@ public class DiezelGenerator {
 			State fromState = stateTypes.get(s.id);
 			if (s == graph.out)
 				continue;
-			System.out.println("generating " + fromState.name);
 			List<Transition> transitions = new ArrayList<Transition>();
 			// delegate to the state the job to declare the type
 			// append transitions
 			for (T t : s.outs) {
 				State toState = stateTypes.get(t.out.id);
-				System.out.println("\tto " + toState.name);
 				Transition trans = index.get(t.name);
 				transitions.add(trans.clone(toState));
 				
@@ -202,8 +200,8 @@ public class DiezelGenerator {
 		compileUnit.add("generator", this);
 		compileUnit.add("state", state);
 		String result = compileUnit.render() ;
-		System.out.println("-------------------------------------------");
-		System.out.println(result);
+//		System.out.println("-------------------------------------------");
+//		System.out.println(result);
 		return result;
 	}
 

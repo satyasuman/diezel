@@ -25,13 +25,13 @@ public class Diezel {
 			DiezelGenerator gen = p.parse(src);
 			gen.generate(target);
 		} catch (SAXException e) {
-			throw new DiezelException("Syntax Error in " + src, e);
+			throw new DiezelException("Syntax Error in " + src+": "+ e.getMessage(), e);
 		} catch (IOException e) {
-			throw new DiezelException("File IO Error in " + src, e);
+			throw new DiezelException("File IO Error while compiling " + src+": "+e.getMessage(), e);
 		} catch (ParserConfigurationException e) {
-			throw new DiezelException("Unexpected Sax Error for " + src, e);
+			throw new DiezelException("Unexpected Parser Configuration Error.", e);
 		} catch (ParseException e) {
-			throw new DiezelException("Syntax Error in Diezel Expression " + src, e);
+			throw new DiezelException("Syntax Error in Diezel Expression in " + src+": "+e.getMessage(), e);
 		}
 
 	}

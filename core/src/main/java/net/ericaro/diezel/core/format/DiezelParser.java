@@ -2,6 +2,8 @@ package net.ericaro.diezel.core.format;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -16,140 +18,144 @@ import net.ericaro.diezel.core.builder.Transition;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-public class DiezelParser {
+/**
+ * Parses an XML diezel file, and build a DiezelGenerator class.
+ * 
+ * @author eric
+ */
+public class DiezelParser extends DefaultHandler {
 
 	public static final String XMLNS = "http://diezel.ericaro.net/2.0.0/";
-	public static final String DIEZEL  = "diezel";
-	public static final String PACKAGE = "package";
-	public static final String HEADER = "header";
-	public static final String EXPRESSION = "expression";
-	public static final String PUSH= "push";
-	public static final String PULL= "pull";
-	public static final String JAVADOC = "javadoc";
-	public static final String RETURN = "return";
-	public static final String SIGNATURE= "signature";
-	public static final String TRANSITION  = "transition";
+
 	public static final String ATT_NAME = "name";
 	public static final String ATT_EXTENDS = "extends";
 	public static final String ATT_SUPER = "super";
-	
-	enum Elements{
-		    PACKAGE,
-			HEADER,
-			EXPRESSION,
-			JAVADOC,
-			RETURN,
-			SIGNATURE;
+
+	// simple text element are read using this enum
+	static Map<String, Elements> names = new HashMap<String, Elements>();
+
+	enum Elements {
+		DIEZEL("diezel"), TRANSITION("transition"), TRANSITIONS("transitions"), PUSH("push"), PULL("pull"), PACKAGE("package"), HEADER("header"), EXPRESSION("expression"), JAVADOC("javadoc"), RETURN("return"), SIGNATURE("signature"), GUIDE("guide");
+		String name;
+
+		Elements(String name) {
+			this.name = name;
+			names.put(name, this);
+		}
+
+		static Elements byName(String name) {
+			return names.get(name);
+		}
+
 	}
+
 	private DiezelGenerator gen;
-	public DiezelGenerator parse(File source) throws SAXException, IOException, ParserConfigurationException{
-		
-		Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(getClass().getResource("/Diezel.xsd"));
-		
+	private Transition transition;
+	private Elements currentElement;
+
+	@Override
+	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+		assert uri == XMLNS : "illegal elementn outside the xmlns";
+
+		currentElement = Elements.byName(localName);
+		assert currentElement !=null : "found and unknown element "+localName;
+		switch (currentElement) {
+		case DIEZEL:
+			gen = new DiezelGenerator();
+			break;
+		case PUSH:
+			Generic generic = readGeneric(attributes);
+			if (transition == null)
+				gen.addRootType(generic);
+			else
+				transition.addPush(generic);
+			break;
+		case PULL:
+			generic = readGeneric(attributes);
+			transition.addPush(generic);
+			break;
+		case TRANSITION:
+			transition = new Transition(attributes.getValue(ATT_NAME));
+			gen.addTransition(transition);
+			break;
+		}
+	}
+
+	/**
+	 * read generic attributes
+	 * 
+	 * @param attributes
+	 * @return
+	 */
+	private Generic readGeneric(Attributes attributes) {
+		Generic gen = new Generic(attributes.getValue(ATT_NAME));
+		gen.setExtendsType(attributes.getValue(ATT_EXTENDS));
+		gen.setSuperType(attributes.getValue(ATT_SUPER));
+		return gen;
+	}
+
+	@Override
+	public void endElement(String uri, String localName, String qName) throws SAXException {
+		if (Elements.TRANSITION.name.equals(localName))
+			transition = null;
+	}
+
+	@Override
+	public void characters(char[] ch, int start, int length) throws SAXException {
+		if (currentElement == null)
+			return;
+		String str = new String(ch, start, length);
+		switch (currentElement) {
+		case PACKAGE:
+			gen.setPackageName(str);
+			break;
+		case HEADER:
+			gen.setHeader(str);
+			break;
+		case GUIDE:
+			gen.setGuideBaseName(str);
+			break;
+		case EXPRESSION:
+			gen.setWorkflow(str);
+			break;
+		case JAVADOC:
+			transition.setJavadoc(str);
+			break;
+		case RETURN:
+			transition.setOptionalReturnType(str);
+			break;
+		case SIGNATURE:
+			transition.setAfterTypeDeclaration(str);
+			break;
+		}
+	}
+
+	@Override
+	public void error(SAXParseException e) throws SAXException {
+		throw e;
+	}
+
+	@Override
+	public void warning(SAXParseException e) throws SAXException {
+		System.out.println("warning" + e);
+	}
+
+	public static DiezelGenerator parse(File source) throws SAXException, IOException, ParserConfigurationException {
+		SAXParser parser = newDiezelSaxParser();
+		DiezelParser p = new DiezelParser();
+		parser.parse(source, p);
+		return p.gen;
+	}
+
+	public static SAXParser newDiezelSaxParser() throws SAXException, ParserConfigurationException {
+		Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(DiezelParser.class.getResource("Diezel.xsd"));
 		SAXParserFactory parserF = javax.xml.parsers.SAXParserFactory.newInstance();
 		parserF.setSchema(schema);
 		parserF.setNamespaceAware(true);
 		SAXParser parser = parserF.newSAXParser();
-		parser.parse(source, new DefaultHandler(){
-
-			Transition transition;
-			private Elements currentElement;
-
-			@Override
-			public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-				assert uri == XMLNS;
-				System.out.println(localName);
-				if (DIEZEL.equals(localName) ){
-					gen = new DiezelGenerator();
-				}
-				else if (PUSH.equals(localName)){
-					Generic generic = readGeneric(attributes) ;
-					if (transition == null)
-						gen.addRootType(generic);
-					else
-						transition.addPush(generic);
-				}
-				else if (PULL.equals(localName)){
-					Generic generic = readGeneric(attributes) ;
-					transition.addPush(generic);
-				}
-				else if (TRANSITION.equals(localName)){
-					transition = new Transition(attributes.getValue(ATT_NAME));
-					gen.addTransition(transition);
-				}
-				else if (PACKAGE.equals(localName))
-					currentElement = Elements.PACKAGE;
-				else if (HEADER.equals(localName))
-					currentElement = Elements.HEADER;
-				else if (EXPRESSION.equals(localName))
-					currentElement = Elements.EXPRESSION;
-				else if (JAVADOC.equals(localName))
-					currentElement = Elements.JAVADOC;
-				else if (RETURN.equals(localName))
-					currentElement = Elements.RETURN;
-				else if (SIGNATURE.equals(localName))
-					currentElement = Elements.SIGNATURE;
-				else
-					currentElement = null;
-			}
-
-			
-			private Generic readGeneric(Attributes attributes) {
-				Generic gen = new Generic(attributes.getValue(ATT_NAME));
-				gen.setExtendsType(attributes.getValue(ATT_EXTENDS));
-				gen.setSuperType(attributes.getValue(ATT_SUPER));
-				return gen;
-			}
-
-
-			@Override
-			public void endElement(String uri, String localName, String qName) throws SAXException {
-				if (TRANSITION.equals(localName))
-					transition = null;
-			}
-
-
-			public String[] parseList(String value) {
-				if (value == null)
-					return new String[0];
-				return value.split(" |,");
-			}
-
-			@Override
-			public void characters(char[] ch, int start, int length) throws SAXException {
-				if (currentElement==null) return;
-				String str = new String(ch,start,length);
-				//System.out.println(str);
-				switch(currentElement){
-				case PACKAGE:
-					gen.setPackageName(str);
-					break;
-				case HEADER:
-					gen.setHeader(str);
-					break;
-				case EXPRESSION:
-					gen.setWorkflow(str);
-					break;
-				case JAVADOC:
-					transition.setJavadoc(str);
-					break;
-				case RETURN:
-					transition.setOptionalReturnType(str);
-					break;
-				case SIGNATURE:
-					transition.setAfterTypeDeclaration(str);
-					break;
-				}
-			}
-
-			
-			
-			
-		});
-		
-		return gen;
-		
+		return parser;
 	}
 }
