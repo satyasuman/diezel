@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.ericaro.diezel.core.gen.FileUtil;
+import net.ericaro.diezel.core.builder.FileUtil;
 
 
 /**
@@ -307,7 +307,7 @@ public class Graph {
 	
 	static int debugCount=0;
 	public static void log(Graph g){
-		try {	g.graph("target/debug"+ ++debugCount);		} catch (IOException e) {}
+		//try {	g.graph("target/debug"+ ++debugCount);		} catch (IOException e) {}
 	}
 	
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://diezel.ericaro.net/2.0.0/" xmlns="http://diezel.ericaro.net/2.0.0/">
+	<xs:complexType name="generic">
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="super" type="xs:string"/>
+			<xs:attribute name="extends" type="xs:string"/>
+	</xs:complexType>
+	
+	<xs:element name="transition">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="javadoc" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="push" type="generic" minOccurs="0"/>
+				<xs:element name="pull" type="generic" minOccurs="0"/>
+				<xs:element name="return" type="xs:string" default="void" maxOccurs="1"/>
+				<xs:element name="signature" type="xs:string" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="diezel">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="package" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="header" type="xs:string" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="push" type="generic" minOccurs="0"/>
+				<xs:element name="guide" type="xs:string" default="Guide" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="expression" type="xs:string" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="transition" minOccurs="1" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

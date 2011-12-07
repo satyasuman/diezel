@@ -1,0 +1,29 @@
+
+compileUnit(generator, state) ::= <<
+/*
+	<generator.header>
+*/
+package <generator.packageName> ;
+
+public interface <state.name><genericDefinition(state.generics)> {
+
+	<state.transitions:transitionDefinition(generator)>
+	
+}
+>>
+
+genericDefinition(generics) ::="<if(first(generics) )> \<<generics:singleGenericDefinition();separator=\", \">> <endif> "
+
+singleGenericDefinition(generic)::= "<generic.name><if (generic.extends)> extends <generic.extends><elseif(generic.superType)>super <generic.superType><endif>"
+
+
+transitionDefinition(transition, generator)::= <<
+
+/**
+<transition.javadoc>
+**/
+public <genericDefinition(transition.generics)> <if(transition.nextState.output)><transition.returnType><else><stateDefinition(transition.nextState)><endif> <transition.signature> ;
+
+>>
+
+stateDefinition(state) ::= "<state.name><genericDefinition(state.generics)>"

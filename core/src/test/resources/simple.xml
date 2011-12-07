@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diezel xmlns="http://diezel.ericaro.net/2.0.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<package>net.ericaro.diezel.xml</package>
+	<header>My HEADER</header>
+	<push name="U" extends="String"/>
+	<guide>XMLGuide</guide>
+	<expression>a</expression>
+	<transition name="a">
+		<javadoc>Hello there</javadoc>
+		<before></before>
+		<return>void</return>
+		<signature>trans_a(float x)</signature>
+	</transition>
+</diezel>
