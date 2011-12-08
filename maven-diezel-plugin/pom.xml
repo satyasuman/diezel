@@ -11,28 +11,68 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>maven plugin for diezel Embedded Domain Specific Language Generator</name>
-	
+
 	<properties>
-	<mvn.version>2.0.4</mvn.version></properties>
-	
+		<googlecode>diezel</googlecode>
+		<mvn.version>2.0.4</mvn.version>
+	</properties>
+
 	<dependencies>
-	<dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>${mvn.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-project</artifactId>
-      <version>${mvn.version}</version>
-    </dependency>
-    <dependency>
-    	<groupId>net.ericaro</groupId>
-    	<artifactId>diezel-core</artifactId>
-    	<version>1.0.0-SNAPSHOT</version>
-    </dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-plugin-api</artifactId>
+			<version>${mvn.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>${mvn.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.ericaro</groupId>
+			<artifactId>diezel-core</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
-	
-	
-	
+
+	<!-- MAVEN STUFF -->
+	<url>http://${googlecode}.googlecode.com/</url>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>Sonatype Nexus Snapshots</name>
+			<url>http://oss.sonatype.org/content/repositories/snapshots</url>
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<name>Nexus Release Repository</name>
+			<url>http://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<scm>
+		<connection>scm:svn:http://${googlecode}.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://${googlecode}.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://${googlecode}.googlecode.com/svn/trunk/</url>
+	</scm>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>ericaro</name>
+			<email>eric@ericaro.net</email>
+			<organization>Personal</organization>
+			<roles>
+				<role>Owner</role>
+			</roles>
+		</developer>
+	</developers>
+
 </project>
