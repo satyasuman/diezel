@@ -12,7 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import net.ericaro.diezel.core.Diezel;
 import net.ericaro.diezel.core.DiezelException;
 import net.ericaro.diezel.core.builder.DiezelGenerator;
-import net.ericaro.diezel.core.format.DiezelParser;
+import net.ericaro.diezel.core.builder.DiezelParser;
 import net.ericaro.diezel.core.parser.ParseException;
 
 import org.apache.maven.plugin.AbstractMojo;
