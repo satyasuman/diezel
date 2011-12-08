@@ -9,7 +9,7 @@ public class State {
 
 	
 	List<Transition> transitions = new ArrayList<Transition>();
-	Set<Generic> generics = new HashSet<Generic>();
+	List<Generic> generics = new ArrayList<Generic>();
 	
 	String name;
 	boolean isOutput = false;
@@ -48,7 +48,7 @@ public class State {
 
 
 
-	public Set<Generic> getGenerics() {
+	public List<Generic> getGenerics() {
 		return generics;
 	}
 
@@ -70,6 +70,15 @@ public class State {
 		return isOutput;
 	}
 	
+	/** to dot graphiz protocol
+	 * 
+	 * @return
+	 */
+	public String toString(){
+			StringBuilder sb = new StringBuilder();
+			sb.append(getName()).append("[shape=component,label=\"" + asJavaType() + "\"]");
+			return sb.toString();
+	}
 	
 	
 	

@@ -526,6 +526,9 @@ public class Graph {
 	public void graph(String name) throws IOException {
 		File f = new File("./" + name + ".dot");
 		FileUtil.printFile(f, toString(), true);
+		dot(name);
+	}
+	public static void dot(String name) throws IOException {
 		PrintStream pout = System.out;
 		try {
 			Process r = Runtime.getRuntime().exec(

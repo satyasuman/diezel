@@ -11,6 +11,19 @@ public class GraphBuilder implements DiezelSax<Graph> {
 
 	Graph graph;
 
+	
+	/** build a raw graph based on a single expression
+	 * 
+	 * @param expression
+	 * @return
+	 * @throws ParseException
+	 */
+	public static Graph build(String expression) throws ParseException{
+		GraphBuilder db = new GraphBuilder();
+		RegExp.parse(expression, db);
+		return db.getGraph();
+	}
+	
 	/**
 	 * to retrieve a graph after the first parsing
 	 * 

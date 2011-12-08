@@ -6,7 +6,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import net.ericaro.diezel.core.builder.DiezelGenerator;
-import net.ericaro.diezel.core.format.DiezelParser;
+import net.ericaro.diezel.core.builder.DiezelParser;
 import net.ericaro.diezel.core.parser.ParseException;
 
 import org.xml.sax.SAXException;

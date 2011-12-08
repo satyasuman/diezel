@@ -4,13 +4,22 @@
 	<header>My HEADER</header>
 	<guide>MyGuide</guide>
 	<push name="U" extends="String" />
-	<expression>a</expression>
+	<expression>(a|b),a</expression>
+	<states>
+		<state>Middle</state>
+	</states>
 	<transitions>
 		<transition name="a">
-			<push name="V" extends="Object" />
+			<push name="W" extends="Object" />
 			<javadoc>Hello there</javadoc>
 			<return>void</return>
-			<signature>trans_a(float x)</signature>
+			<signature>trans_a()</signature>
+		</transition>
+		<transition name="b">
+			<push name="W" extends="Object" />
+			<javadoc>Hello there</javadoc>
+			<return>void</return>
+			<signature>trans_b()</signature>
 		</transition>
 	</transitions>
 </diezel>

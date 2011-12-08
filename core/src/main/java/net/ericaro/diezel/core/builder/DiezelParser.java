@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core.format;
+package net.ericaro.diezel.core.builder;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +12,6 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import net.ericaro.diezel.core.builder.DiezelGenerator;
-import net.ericaro.diezel.core.builder.Generic;
-import net.ericaro.diezel.core.builder.Transition;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -38,7 +35,7 @@ public class DiezelParser extends DefaultHandler {
 	static Map<String, Elements> names = new HashMap<String, Elements>();
 
 	enum Elements {
-		DIEZEL("diezel"), TRANSITION("transition"), TRANSITIONS("transitions"), PUSH("push"), PULL("pull"), PACKAGE("package"), HEADER("header"), EXPRESSION("expression"), JAVADOC("javadoc"), RETURN("return"), SIGNATURE("signature"), GUIDE("guide");
+		DIEZEL("diezel"), TRANSITION("transition"), TRANSITIONS("transitions"), PUSH("push"), PULL("pull"), PACKAGE("package"), HEADER("header"), EXPRESSION("expression"), JAVADOC("javadoc"), RETURN("return"), SIGNATURE("signature"), GUIDE("guide"), STATES("states"), STATE("state");
 		String name;
 
 		Elements(String name) {
@@ -107,7 +104,7 @@ public class DiezelParser extends DefaultHandler {
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (currentElement == null)
 			return;
-		String str = new String(ch, start, length);
+		String str = new String(ch, start, length).trim();
 		switch (currentElement) {
 		case PACKAGE:
 			gen.setPackageName(str);
@@ -116,10 +113,13 @@ public class DiezelParser extends DefaultHandler {
 			gen.setHeader(str);
 			break;
 		case GUIDE:
-			gen.setGuideBaseName(str);
+			gen.setGuideName(str);
 			break;
 		case EXPRESSION:
-			gen.setWorkflow(str);
+			gen.setExpression(str);
+			break;
+		case STATE:
+			gen.addStateName(str);
 			break;
 		case JAVADOC:
 			transition.setJavadoc(str);

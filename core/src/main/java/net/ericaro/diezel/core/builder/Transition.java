@@ -19,6 +19,7 @@ public class Transition {
 	String signature ="";
 	String returnType;
 	private State nextState;
+	private State source;
 	
 	
 	
@@ -98,7 +99,7 @@ public class Transition {
 	public State getNextState() {
 		return nextState;
 	}
-	Transition clone(State nextState){
+	Transition clone(State source, State nextState){
 		Transition that = new Transition(this.alias);
 		that.alias = this.alias ; 
 		that.generics = this.generics ;
@@ -106,10 +107,21 @@ public class Transition {
 		that.returnType = this.returnType;
 		that.signature  =this.signature  ;
 		that.nextState = nextState;
+		that.source = source;
 		return that;
 	}
 	public String getReturnType() {
 		return returnType;
+	}
+	
+	/** to dot graphiz protocol
+	 * 
+	 * @return
+	 */
+	public String toString(){
+			StringBuilder sb = new StringBuilder();
+			sb.append(source.getName()).append(" -> ").append(nextState.getName() ).append("[label=\"" +alias+":"+getSignature() + "\"]");
+			return sb.toString();
 	}
 	
 	

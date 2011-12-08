@@ -50,6 +50,27 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="states">
+		<xs:annotation>
+			<xs:documentation source="description">
+				a list of states, as they
+				appear in the expression language, using the transition list
+				as preffered order.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="state" minOccurs="1" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation source="description">
+							a simple state name
+			</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="transition">
 		<xs:annotation>
 			<xs:documentation source="description">
@@ -146,7 +167,8 @@
 				<xs:element name="push" type="generic" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation source="description">
-							push a generic type to the start node. This way it is possible to
+							push a generic type to
+							the start node. This way it is possible to
 							return it at the end.
 						</xs:documentation>
 					</xs:annotation>
@@ -154,19 +176,22 @@
 				<xs:element name="guide" type="xs:string" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation source="description">
-							base name for the default name for every state class.
+							base name for the
+							default name for every state class.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="expression" type="xs:string" minOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
-							the expression that defines the edsl flow. example
+							the expression that
+							defines the edsl flow. example
 							"a|b,c,d?, e*"
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element ref="transitions" minOccurs="1" />
+				<xs:element ref="states" minOccurs="1" />
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
