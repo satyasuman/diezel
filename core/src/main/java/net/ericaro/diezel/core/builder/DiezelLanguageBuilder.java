@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.ericaro.diezel.core.DiezelException;
@@ -40,7 +41,7 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 	private String guideBaseName = "Guide";
 	private List<Generic> rootTypes = new ArrayList<Generic>(); // the root state generics, always usefull to start with
 	private List<Transition> transitions = new ArrayList<Transition>();
-	private List<String> states = new ArrayList<String>();
+	private Map<String, String> states = new HashMap<String,String>();
 
 	// result of compilation
 	transient DirectedGraph<State, TransitionInstance> graph; // graph computed from the expression expression
@@ -61,7 +62,7 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 		that.guideBaseName  = this.guideBaseName;
 		that.rootTypes      = Collections.unmodifiableList(this.rootTypes    );
 		that.transitions    = Collections.unmodifiableList(this.transitions  );
-		that.states         = Collections.unmodifiableList(this.states       );
+		//that.states         = Collections.unmodifiableList(this.states       );
 		that.graph          = Graphs.unmodifiableDirectedGraph(this.graph    );
 		that.start          = this.start        ;
 		that.end            = this.end          ;
@@ -105,6 +106,10 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 		for (S s : g.states) 
 			for(T t: s.outs)
 				graph.addEdge(index.get(t.name).newInstance(graph), stateTypes.get(t.in.id),stateTypes.get(t.out.id) );
+		
+		
+		
+		
 	}
 	
 
@@ -113,24 +118,31 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 	 */
 	private void nameStates() {
 
-		List<State> knownStates = new ArrayList<State>();
-		knownStates.add(start);
 		start.name = guideBaseName;
+		
+		for(Entry<String, String>  e: states.entrySet()){
+			State state = getStateByPath(e.getKey());
+			state.name = e.getValue() ;
+		}
 
-		int stateNumber = graph.getVertexCount();
-		int i = 0;
-		while (knownStates.size() != stateNumber)
-			for (State s : new ArrayList<State>(knownStates))
-				for (TransitionInstance t : graph.getOutEdges(s) ){
-					State target = graph.getOpposite(s, t);
-					if (!knownStates.contains(target)) {
-						// it's a new, unknown state from a known one.
-						String stateName = generateName(i++);
-						target.name = stateName;
-						knownStates.add(target);
-					}
-				}
 		end.name = "Out";
+	}
+
+	
+	
+	private State getStateByPath(String key) {
+		String[] elements = key.split(",");
+		State current = start;
+		for(String next: elements){
+			for(TransitionInstance  t: graph.getOutEdges(current) ){
+				if (next.equals(t.getAlias())){
+					current = graph.getDest(t);
+					break; // get out of the transition loop
+				}
+			}
+		}
+		// now the whole path has been parsed, and current is our goal
+		return current;
 	}
 
 	private String generateName(int i) {
@@ -217,10 +229,9 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 		return transitions.add(e);
 	}
 
-	// TODO improve state modelling: use path -> state instead.
 
-	public void addStateName(String name) {
-		this.states.add(name);
+	public void addStatePath(String path, String name) {
+		this.states.put(path, name);
 	}
 
 	

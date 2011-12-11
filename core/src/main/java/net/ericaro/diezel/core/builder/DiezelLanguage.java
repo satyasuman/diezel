@@ -15,7 +15,7 @@ public class DiezelLanguage  implements Compilable{
 	String guideBaseName = "Guide";
 	List<Generic> rootTypes = new ArrayList<Generic>(); // the root state generics, always usefull to start with
 	List<Transition> transitions = new ArrayList<Transition>();
-	List<String> states = new ArrayList<String>();
+	//List<String> states = new ArrayList<String>();
 
 	// result of compilation
 	transient DirectedGraph<State, TransitionInstance> graph; // graph computed from the expression expression
@@ -52,12 +52,6 @@ public class DiezelLanguage  implements Compilable{
 	public Collection<State> getStates(){
 		return graph.getVertices();
 	}
-	
-	// TODO improve state modelling: use path -> state instead.
-	public List<String> getStateNames() {
-		return states;
-	}
-
 	
 	public DirectedGraph<State, TransitionInstance> getGraph() {
 		return graph;

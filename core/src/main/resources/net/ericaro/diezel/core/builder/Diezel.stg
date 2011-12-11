@@ -23,7 +23,7 @@ package <lang.packageName> ;
 /**
 
 */
-public class <lang.startState.name><genericDefinition(lang.startState.generics)> implements <stateUsage(lang.startState.parent)>{
+public class <lang.startState.name><genericDefinition(lang.startState.generics)><if(lang.extends)> extends <lang.extends> <endif>implements <stateUsage(lang.startState.parent)>{
     <lang.startState.transitions:implementationTransitionDefinition(lang)>
     <lang.states:implementationStateUnit(lang)>
 }
@@ -34,14 +34,14 @@ transitionDefinition(transition, lang)::= <<
 /**
 <transition.javadoc>
 **/
-public <genericDefinition(transition.push)> <if(transition.nextState.output)><transition.returnType><else><stateUsage(transition.nextState)><endif> <transition.signature> 
+public <genericDefinition(transition.push)><if(transition.nextState.output)> <transition.returnType><else> <stateUsage(transition.nextState)><endif> <transition.signature>
 >>
 
 stateDefinition(state) ::= "<state.name><genericDefinition(state.generics)>"
 stateUsage(state) ::= "<state.name><genericUsage(state.generics)>"
 
 //<! generic definition differs from usage by the declaration of super or extends !>
-genericDefinition(generics) ::="<if(first(generics) )> \<<generics:singleGenericDefinition();separator=\", \">> <endif> "
+genericDefinition(generics) ::="<if(first(generics) )>\<<generics:singleGenericDefinition();separator=\", \">><endif>"
 singleGenericDefinition(generic)::= "<generic.name><if (generic.extends)> extends <generic.extends><elseif(generic.superType)>super <generic.superType><endif>"
 
 //<! simple <U,V> like stuff or empty!> 

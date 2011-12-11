@@ -36,6 +36,7 @@ public class DiezelParser extends DefaultHandler {
 	public static final String XMLNS = "http://diezel.ericaro.net/2.0.0/";
 
 	public static final String ATT_NAME = "name";
+	public static final String ATT_PATH = "path";
 	public static final String ATT_EXTENDS = "extends";
 	public static final String ATT_SUPER = "super";
 
@@ -46,15 +47,16 @@ public class DiezelParser extends DefaultHandler {
 		DIEZEL("diezel"), 
 		TRANSITION("transition"), 
 		TRANSITIONS("transitions"), 
-		PUSH("push"), 
-		PULL("pull"), 
+		CAPTURE("capture"), 
+		DROP("drop"), 
 		PACKAGE("package"), 
 		HEADER("header"), 
 		EXPRESSION("expression"), 
 		JAVADOC("javadoc"), 
 		RETURN("return"), 
 		SIGNATURE("signature"), 
-		GUIDE("guide"), 
+		NAME("name"), 
+		EXTENDS("extends"), 
 		STATES("states"), 
 		STATE("state"),
 		DIEZEL_IMPLEMENTATION("diezelImplementation"),
@@ -78,7 +80,7 @@ public class DiezelParser extends DefaultHandler {
 	private DiezelLanguageBuilder gen;
 	private DiezelImplementationBuilder genImpl;
 	DiezelBuilder builder;
-	
+	private String currentPath ;
 	private Transition transition;
 	private TransitionImplementation transitionImpl;
 	
@@ -99,20 +101,23 @@ public class DiezelParser extends DefaultHandler {
 			builder = genImpl = new DiezelImplementationBuilder();
 			break;
 			
-		case PUSH:
+		case CAPTURE:
 			Generic generic = readGeneric(attributes);
 			if (transition == null)
 				gen.addRootType(generic);
 			else
 				transition.addPush(generic);
 			break;
-		case PULL:
+		case DROP:
 			generic = readGeneric(attributes);
 			transition.addPull(generic);
 			break;
 		case TRANSITION:
 			transition = new Transition(attributes.getValue(ATT_NAME));
 			gen.addTransition(transition);
+			break;
+		case STATE:
+			currentPath = attributes.getValue(ATT_PATH);
 			break;
 			
 		case TRANSITION_IMPLEMENTATION:
@@ -151,7 +156,7 @@ public class DiezelParser extends DefaultHandler {
 		case PACKAGE:
 			builder.setPackageName(str);
 			break;
-		case GUIDE:
+		case NAME:
 			builder.setGuideName(str);
 			break;
 		case HEADER:
@@ -161,10 +166,13 @@ public class DiezelParser extends DefaultHandler {
 			gen.setExpression(str);
 			break;
 		case STATE:
-			gen.addStateName(str);
+			gen.addStatePath(currentPath, str);
 			break;
 		case IMPLEMENTS:
 			genImpl.setImplements(str);
+			break;
+		case EXTENDS:
+			genImpl.setExtends(str);
 			break;
 		case BODY:
 			transitionImpl.setBody(str);

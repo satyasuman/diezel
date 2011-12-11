@@ -2,27 +2,27 @@
 <diezel xmlns="http://diezel.ericaro.net/2.0.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<package>net.ericaro.diezel.xml</package>
 	<!-- <header>My HEADER</header> -->
-	<guide>MyGuide</guide>
-	<push name="U" extends="String" />
+	<name>MyGuide</name>
+	<capture name="U" extends="String" />
 	<expression>(a|b), c,d</expression>
 	<states>
-		<state>Middle</state>
+		<state path="a.c">Middle</state>
 	</states>
 	<transitions>
 		<transition name="a">
-			<push name="W" extends="Object" />
+			<capture name="W" extends="Object" />
 			<javadoc>Hello there</javadoc>
 			<return>void</return>
 			<signature>trans_a()</signature>
 		</transition>
 		<transition name="b">
-			<push name="W" extends="Object" />
+			<capture name="W" extends="Object" />
 			<javadoc>Hello there</javadoc>
 			<return>void</return>
 			<signature>trans_b()</signature>
 		</transition>
 		<transition name="c">
-			<pull name="W" extends="Object" />
+			<drop name="W" extends="Object" />
 			<javadoc>Hello there in C</javadoc>
 			<return>void</return>
 			<signature>withC(float f)</signature>

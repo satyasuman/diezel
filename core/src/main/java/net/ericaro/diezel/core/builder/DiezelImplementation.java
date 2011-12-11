@@ -9,6 +9,7 @@ import edu.uci.ics.jung.graph.Graph;
 public class DiezelImplementation implements Compilable{
 
 	DiezelLanguage language;
+	String extendClass;
 	Graph<StateImplementation, TransitionImplementationInstance> graph;
 	List<TransitionImplementation> transitions;
 	String packageName;
@@ -37,6 +38,9 @@ public class DiezelImplementation implements Compilable{
 		return language.getHeader();
 	}
 	
+	public String getExtends(){
+		return extendClass ;
+	}
 	
 	
 }

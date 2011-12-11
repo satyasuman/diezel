@@ -3,14 +3,31 @@
 	targetNamespace="http://diezel.ericaro.net/2.0.0/" xmlns="http://diezel.ericaro.net/2.0.0/"
 	elementFormDefault="qualified">
 
+
+<xs:simpleType name="javaIdentifier">
+  <xs:restriction base="xs:string">
+    <xs:pattern value="[_a-zA-Z]([_a-zA-Z0-9])*"/>
+  </xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="qname">
+  <xs:restriction base="xs:string">
+    <xs:pattern value="[_a-zA-Z]([_a-zA-Z0-9])*(\.[_a-zA-Z]([_a-zA-Z0-9])*)*"/>
+  </xs:restriction>
+</xs:simpleType>
+<xs:simpleType name="path">
+  <xs:restriction base="qname"/>
+</xs:simpleType>
+<xs:simpleType name="alias">
+  <xs:restriction base="javaIdentifier"/>
+</xs:simpleType>
+
+
 	<xs:complexType name="generic">
 		<xs:annotation>
-			<xs:documentation source="description">
-				a generic type is an
-				abstraction of a generic type in java, like U extends V&amp;U
-			</xs:documentation>
+			<xs:documentation source="description">generic defines a generic type ( like "U extends V").
+</xs:documentation>
 		</xs:annotation>
-		<xs:attribute name="name" type="xs:string" use="required">
+		<xs:attribute name="name" type="javaIdentifier" use="required">
 			<xs:annotation>
 				<xs:documentation source="description">
 					generic type name, usually
@@ -36,42 +53,52 @@
 		</xs:attribute>
 	</xs:complexType>
 
-	<xs:element name="package" type="xs:string" >
+
+
+	<xs:element name="package" type="qname">
 		<xs:annotation>
-			<xs:documentation source="description">
-				java fully qualified
-				package name where to generate all the code.
-			</xs:documentation>
+			<xs:documentation source="description">Fully qualified package name.</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 
-	<xs:element name="guide" type="xs:string">
+	<xs:element name="name" type="javaIdentifier">
 		<xs:annotation>
-			<xs:documentation source="description">
-				base name for the
-				default
-				name for every state class.
-			</xs:documentation>
+			<xs:documentation source="description">Java class name that:
+ - defines the language itself (along with it's package name)
+ - is the class name for the starting state.
+ - is the base for state naming convention
+
+Should be a valid java identifier.
+</xs:documentation>
 		</xs:annotation>
 	</xs:element>
 
 	<xs:element name="states">
 		<xs:annotation>
-			<xs:documentation source="description">
-				a list of states, as they
-				appear in the expression language, using the transition list
-				as
-				preffered order.
-			</xs:documentation>
+			<xs:documentation source="description">declare the list of states</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element name="state" minOccurs="1" maxOccurs="unbounded">
 					<xs:annotation>
-						<xs:documentation source="description">
-							a simple state name
-						</xs:documentation>
+						<xs:documentation source="description">Override the state's name denoted by its "path".
+the path, is a dot-separated list of transition's aliases.</xs:documentation>
 					</xs:annotation>
+					<xs:complexType>
+						<xs:simpleContent>
+							<xs:extension base="javaIdentifier">
+								<xs:attribute name="path" type="path" use="required">
+									<xs:annotation>
+										<xs:documentation source="description">
+											the path to the state you want to fix the name.
+											
+											the path is a comma separated list of aliases to reach the state.
+										</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:extension>
+						</xs:simpleContent>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
@@ -79,11 +106,9 @@
 
 	<xs:element name="transition">
 		<xs:annotation>
-			<xs:documentation source="description">
-				a transition is an
-				"abstract" method call that lead the EDSL engine from one state to
-				another.
-			</xs:documentation>
+			<xs:documentation source="description">A transition  is a  method call that is used to
+chain methods.
+</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
@@ -96,21 +121,18 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="push" type="generic" minOccurs="0">
+				<xs:element name="capture" type="generic" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation source="description">
-							add a generic type to
-							the next state. Useful to "catch" some actual
-							type.
+							capture a generic type to
+							the next state.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="pull" type="generic" minOccurs="0">
+				<xs:element name="drop" type="generic" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation source="description">
-							remove a generic type
-							when moving to the next step. Making this type
-							local.
+							drop a generic type when moving to the next step.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
@@ -119,7 +141,7 @@
 					<xs:annotation>
 						<xs:documentation source="description">
 							the actual return type
-							when this transition reaches an end.
+							when this transition reaches the last state of the graph.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
@@ -127,13 +149,13 @@
 					maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
-							the actual method
-							signature name(types) throws Exceptions"
+							the actual method like:
+							"signature name(types) throws Exceptions"
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:all>
-			<xs:attribute name="name" type="xs:string" use="required">
+			<xs:attribute name="name" type="alias" use="required">
 				<xs:annotation>
 					<xs:documentation source="description">
 						the transition name or
@@ -146,19 +168,15 @@
 
 	<xs:element name="transitionImplementation">
 		<xs:annotation>
-			<xs:documentation source="description">
-				a transitionImplementation
-				is an
-				"concrete" method call that lead the EDSL engine from one state
-				to
-				another.
+			<xs:documentation source="description">A transitionImplementation adds body java code to the language's
+transition.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-			<xs:element name="body" type="xs:string" minOccurs="1"/>
+				<xs:element name="body" type="xs:string" minOccurs="1" />
 			</xs:all>
-			<xs:attribute name="name" type="xs:string" use="required">
+			<xs:attribute name="name" type="alias" use="required">
 				<xs:annotation>
 					<xs:documentation source="description">
 						the transition name or
@@ -171,49 +189,58 @@
 
 	<xs:element name="diezel">
 		<xs:annotation>
-			<xs:documentation source="description">
-				diezel top level element.
-				Fully defines an Embedded Domain Specific
-				Language.
-			</xs:documentation>
+			<xs:documentation source="description">Diezel element defines a single Diezel language.
+
+A Diezel Language is a set of interfaces that fully defines
+state/transition network of chained methods.
+
+A Diezel language does not provide any implementation. Just
+the definition of  this network.
+
+Transitions are defined as XML Element transitions.
+The network layout is described using a regular expression.
+States are deduced from the regular expression.
+
+It is possible to override the default state name 
+given the state path to it.
+</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
 				<xs:element ref="package" minOccurs="1" />
 				<xs:element name="header" type="xs:string" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation source="description">
-							the file header for
-							every generated file.
+						<xs:documentation source="description">header string for every generated file.
+						without the /* */ symbols
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="push" type="generic" minOccurs="0">
+				<xs:element name="capture" type="generic" minOccurs="0">
 					<xs:annotation>
-						<xs:documentation source="description">
-							push a generic type to
-							the start node. This way it is possible to
-							return it at the end.
-						</xs:documentation>
+						<xs:documentation source="description">add a generic to be captured by this transition, 
+and append it to the next state.
+for instance a call like
+"public &lt;T> State&lt;T> with(class&lt;T> type);"
+
+captures the generic "T".
+</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="guide" minOccurs="0" />
+				<xs:element ref="name" minOccurs="0" >
+					<xs:annotation>
+						<xs:documentation>The java name for this language, or language implementation.
+</xs:documentation>
+					</xs:annotation></xs:element>
 				<xs:element name="expression" type="xs:string" minOccurs="1">
 					<xs:annotation>
-						<xs:documentation source="description">
-							the expression that
-							defines the edsl flow. example
-							"a|b,c,d?, e*"
-						</xs:documentation>
+						<xs:documentation source="description">the regular expression that defines the state/transition network.
+example: "a|b,c,d?, e*"
+See Diezel site for available operators.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="transitions" minOccurs="1">
 					<xs:annotation>
-						<xs:documentation source="description">
-							the set of transition,
-							that
-							are referenced in the language expression
-						</xs:documentation>
+						<xs:documentation source="description">Transitions that defines this language.</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
 						<xs:sequence>
@@ -221,24 +248,32 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element ref="states" minOccurs="1" />
+				<xs:element ref="states" minOccurs="1" >
+					<xs:annotation>
+						<xs:documentation>states are self defined by the regular expression. Here you can overwrite
+those definitions, mapping every state by its path.</xs:documentation>
+					</xs:annotation></xs:element>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
 
 	<xs:element name="diezelImplementation">
 		<xs:annotation>
-			<xs:documentation source="description">
-				diezel implementation top
-				level element.
-				Fully defines an Embedded Domain Specific
-				Language
-				Implementation.
-			</xs:documentation>
+			<xs:documentation source="description">Diezel Implementation defines
+an Implementation for a Diezel language.
+
+A Diezel Implementation is a set of classes that implements
+the one or the language, and whose methods are the transitionss
+as defined in the language.
+
+The responsibility for the implementation is to provide
+methods' body for every transitions.
+</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-				<xs:element name="implements" type="xs:string" minOccurs="1">
+				<xs:element name="extends" type="xs:string" minOccurs="0" />
+				<xs:element name="implements" type="qname" minOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
 							a qualified name to the
@@ -251,7 +286,7 @@
 					</xs:annotation>
 				</xs:element>
 				<xs:element ref="package" minOccurs="1" />
-				<xs:element ref="guide" minOccurs="0" />
+				<xs:element ref="name" minOccurs="0" />
 				<xs:element name="transitions" minOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
@@ -270,5 +305,4 @@
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
-
 </xs:schema>

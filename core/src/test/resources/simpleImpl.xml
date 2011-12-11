@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <diezelImplementation xmlns="http://diezel.ericaro.net/2.0.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<implements>net.ericaro.diezel.xml.MyGuide</implements>
 	<package>net.ericaro.diezel.impl</package>
-	<guide>MyGuideImpl</guide>
+	<name>MyGuideImpl</name>
+	<extends>net.ericaro.diezel.core.builder.AbstractGuide</extends>
+	<implements>net.ericaro.diezel.xml.MyGuide</implements>
 	<transitions>
 		<transitionImplementation name="a">
 			<body>

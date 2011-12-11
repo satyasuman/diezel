@@ -28,6 +28,7 @@ public class DiezelImplementationBuilder implements DiezelBuilder<DiezelImplemen
 	private String guideName;
 	private String languageName;
 	private StateImplementation start;
+	private String extendClass;
 	
 
 	
@@ -38,6 +39,10 @@ public class DiezelImplementationBuilder implements DiezelBuilder<DiezelImplemen
 		this.languageName = str;
 	}
 
+	public void setExtends(String extendClass){
+		this.extendClass = extendClass ; 
+	}
+	
 	public void setGuideName(String str) {
 		this.guideName = str;
 		
@@ -57,7 +62,6 @@ public class DiezelImplementationBuilder implements DiezelBuilder<DiezelImplemen
 		this.language = language;
 	}
 	public DiezelImplementation build(){
-		findParent();
 		
 		buildGraph();
 		DiezelImplementation impl = new DiezelImplementation();
@@ -66,17 +70,13 @@ public class DiezelImplementationBuilder implements DiezelBuilder<DiezelImplemen
 		impl.transitions = Collections.unmodifiableList(transitions);
 		impl.packageName = packageName;
 		impl.start = start;
+		impl.extendClass = extendClass;
 		return impl;
 	}
 	
 
 
 
-
-	private void findParent() {
-		// TODO Auto-generated method stub
-		
-	}
 	/** creates a derivative graph
 	 * 
 	 */
