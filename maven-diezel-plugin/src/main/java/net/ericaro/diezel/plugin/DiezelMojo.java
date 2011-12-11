@@ -176,7 +176,7 @@ public class DiezelMojo extends AbstractMojo {
 	 * @throws MojoFailureException
 	 *             If the tool reported a non-zero exit code.
 	 */
-	protected void processDiezel(File... diezel) throws MojoExecutionException, MojoFailureException{
+	protected void processDiezel(File[] diezel) throws MojoExecutionException, MojoFailureException{
 		DiezelParser p = new DiezelParser();
 			try {
 				//TODO also copy source definition (.xml for languages), into classes, so that it will be possible 
