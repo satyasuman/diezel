@@ -7,19 +7,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-import javax.xml.parsers.ParserConfigurationException;
-
 import net.ericaro.diezel.core.Diezel;
 import net.ericaro.diezel.core.DiezelException;
-import net.ericaro.diezel.core.builder.DiezelGenerator;
-import net.ericaro.diezel.core.builder.DiezelParser;
-import net.ericaro.diezel.core.parser.ParseException;
+import net.ericaro.diezel.core.parser.DiezelParser;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.xml.sax.SAXException;
 
 /** generate a Diezel Mojo
  * 
@@ -161,17 +156,14 @@ public class DiezelMojo extends AbstractMojo {
 			getLog().info("Skipping - all diezels are up to date");
 		} else {
 			determineNonGeneratedSourceRoots();
-
-			for (int i = 0; i < diezels.length; i++) {
-				processDiezel(diezels[i]);
-			}
-
+			processDiezel(diezels);
 			getLog().info("Processed " + diezels.length + " diezel" + (diezels.length != 1 ? "s" : ""));
 		}
 
 		File[] compileSourceRoots = getCompileSourceRoots();
 		for (int i = 0; i < compileSourceRoots.length; i++) 
 			addSourceRoot(compileSourceRoots[i]);
+		
 	}
 
 	/**
@@ -184,10 +176,13 @@ public class DiezelMojo extends AbstractMojo {
 	 * @throws MojoFailureException
 	 *             If the tool reported a non-zero exit code.
 	 */
-	protected void processDiezel(File diezel) throws MojoExecutionException, MojoFailureException{
+	protected void processDiezel(File... diezel) throws MojoExecutionException, MojoFailureException{
 		DiezelParser p = new DiezelParser();
 			try {
-				Diezel.generate(diezel, outputDirectory);
+				//TODO also copy source definition (.xml for languages), into classes, so that it will be possible 
+				// to implement a language defined in another jar.
+				//TODO after the previous one : also scan the dependencies for any Diezel definitions.
+				Diezel.generate(outputDirectory, diezel);
 			} catch (DiezelException e) {
 				throw new MojoFailureException(e.getMessage());
 			}

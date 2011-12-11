@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.ericaro.diezel.core.builder.FileUtil;
+import net.ericaro.diezel.core.builder.FileUtils;
 
 
 /**
@@ -525,12 +525,14 @@ public class Graph {
 	
 	public void graph(String name) throws IOException {
 		File f = new File("./" + name + ".dot");
-		FileUtil.printFile(f, toString(), true);
+		System.out.println("generating dot file "+ f);
+		FileUtils.printFile(f, toString(), true);
 		dot(name);
 	}
 	public static void dot(String name) throws IOException {
 		PrintStream pout = System.out;
 		try {
+			System.out.println("generating png file "+ name);
 			Process r = Runtime.getRuntime().exec(
 					"dot " + name + ".dot -Grankdir=LR -Tpng -o " + name + ".png");
 			System.setOut(new PrintStream(r.getOutputStream()));

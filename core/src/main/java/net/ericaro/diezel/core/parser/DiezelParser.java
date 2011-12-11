@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.core.parser;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,13 +13,21 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 
+import net.ericaro.diezel.core.builder.Compilable;
+import net.ericaro.diezel.core.builder.DiezelBuilder;
+import net.ericaro.diezel.core.builder.DiezelImplementationBuilder;
+import net.ericaro.diezel.core.builder.DiezelLanguageBuilder;
+import net.ericaro.diezel.core.builder.Generic;
+import net.ericaro.diezel.core.builder.Transition;
+import net.ericaro.diezel.core.builder.TransitionImplementation;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * Parses an XML diezel file, and build a DiezelGenerator class.
+ * Parses an XML diezel file, and build a DiezelLanguageBuilder class.
  * 
  * @author eric
  */
@@ -35,7 +43,25 @@ public class DiezelParser extends DefaultHandler {
 	static Map<String, Elements> names = new HashMap<String, Elements>();
 
 	enum Elements {
-		DIEZEL("diezel"), TRANSITION("transition"), TRANSITIONS("transitions"), PUSH("push"), PULL("pull"), PACKAGE("package"), HEADER("header"), EXPRESSION("expression"), JAVADOC("javadoc"), RETURN("return"), SIGNATURE("signature"), GUIDE("guide"), STATES("states"), STATE("state");
+		DIEZEL("diezel"), 
+		TRANSITION("transition"), 
+		TRANSITIONS("transitions"), 
+		PUSH("push"), 
+		PULL("pull"), 
+		PACKAGE("package"), 
+		HEADER("header"), 
+		EXPRESSION("expression"), 
+		JAVADOC("javadoc"), 
+		RETURN("return"), 
+		SIGNATURE("signature"), 
+		GUIDE("guide"), 
+		STATES("states"), 
+		STATE("state"),
+		DIEZEL_IMPLEMENTATION("diezelImplementation"),
+		IMPLEMENTS("implements"),
+		TRANSITION_IMPLEMENTATION("transitionImplementation"),
+		BODY("body"),
+		;
 		String name;
 
 		Elements(String name) {
@@ -49,9 +75,15 @@ public class DiezelParser extends DefaultHandler {
 
 	}
 
-	private DiezelGenerator gen;
+	private DiezelLanguageBuilder gen;
+	private DiezelImplementationBuilder genImpl;
+	DiezelBuilder builder;
+	
 	private Transition transition;
+	private TransitionImplementation transitionImpl;
+	
 	private Elements currentElement;
+
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
@@ -61,8 +93,12 @@ public class DiezelParser extends DefaultHandler {
 		assert currentElement !=null : "found and unknown element "+localName;
 		switch (currentElement) {
 		case DIEZEL:
-			gen = new DiezelGenerator();
+			builder = gen = new DiezelLanguageBuilder();
 			break;
+		case DIEZEL_IMPLEMENTATION:
+			builder = genImpl = new DiezelImplementationBuilder();
+			break;
+			
 		case PUSH:
 			Generic generic = readGeneric(attributes);
 			if (transition == null)
@@ -72,11 +108,16 @@ public class DiezelParser extends DefaultHandler {
 			break;
 		case PULL:
 			generic = readGeneric(attributes);
-			transition.addPush(generic);
+			transition.addPull(generic);
 			break;
 		case TRANSITION:
 			transition = new Transition(attributes.getValue(ATT_NAME));
 			gen.addTransition(transition);
+			break;
+			
+		case TRANSITION_IMPLEMENTATION:
+			transitionImpl = new TransitionImplementation(attributes.getValue(ATT_NAME));
+			genImpl.addTransitionImplementation(transitionImpl);
 			break;
 		}
 	}
@@ -88,10 +129,11 @@ public class DiezelParser extends DefaultHandler {
 	 * @return
 	 */
 	private Generic readGeneric(Attributes attributes) {
-		Generic gen = new Generic(attributes.getValue(ATT_NAME));
-		gen.setExtendsType(attributes.getValue(ATT_EXTENDS));
-		gen.setSuperType(attributes.getValue(ATT_SUPER));
-		return gen;
+		String name = attributes.getValue(ATT_NAME);
+		String ext = attributes.getValue(ATT_EXTENDS);
+		String sup = attributes.getValue(ATT_SUPER);
+		
+		return new Generic(name, ext, sup);
 	}
 
 	@Override
@@ -107,13 +149,13 @@ public class DiezelParser extends DefaultHandler {
 		String str = new String(ch, start, length).trim();
 		switch (currentElement) {
 		case PACKAGE:
-			gen.setPackageName(str);
+			builder.setPackageName(str);
+			break;
+		case GUIDE:
+			builder.setGuideName(str);
 			break;
 		case HEADER:
 			gen.setHeader(str);
-			break;
-		case GUIDE:
-			gen.setGuideName(str);
 			break;
 		case EXPRESSION:
 			gen.setExpression(str);
@@ -121,14 +163,20 @@ public class DiezelParser extends DefaultHandler {
 		case STATE:
 			gen.addStateName(str);
 			break;
+		case IMPLEMENTS:
+			genImpl.setImplements(str);
+			break;
+		case BODY:
+			transitionImpl.setBody(str);
+			break;
 		case JAVADOC:
 			transition.setJavadoc(str);
 			break;
 		case RETURN:
-			transition.setOptionalReturnType(str);
+			transition.setReturnType(str);
 			break;
 		case SIGNATURE:
-			transition.setAfterTypeDeclaration(str);
+			transition.setSignature(str);
 			break;
 		}
 	}
@@ -143,15 +191,15 @@ public class DiezelParser extends DefaultHandler {
 		System.out.println("warning" + e);
 	}
 
-	public static DiezelGenerator parse(File source) throws SAXException, IOException, ParserConfigurationException {
+	public static DiezelBuilder<? extends Compilable> parse(File source) throws SAXException, IOException, ParserConfigurationException {
 		SAXParser parser = newDiezelSaxParser();
 		DiezelParser p = new DiezelParser();
 		parser.parse(source, p);
-		return p.gen;
+		return p.builder;
 	}
 
 	public static SAXParser newDiezelSaxParser() throws SAXException, ParserConfigurationException {
-		Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(DiezelParser.class.getResource("Diezel.xsd"));
+		Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(DiezelBuilder.class.getResource("Diezel.xsd"));
 		SAXParserFactory parserF = javax.xml.parsers.SAXParserFactory.newInstance();
 		parserF.setSchema(schema);
 		parserF.setNamespaceAware(true);

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diezelImplementation xmlns="http://diezel.ericaro.net/2.0.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<implements>net.ericaro.diezel.xml.MyGuide</implements>
+	<package>net.ericaro.diezel.impl</package>
+	<guide>MyGuideImpl</guide>
+	<transitions>
+		<transitionImplementation name="a">
+			<body>
+			System.out.println("Hello world a = $transition$");
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="b">
+			<body>
+			System.out.println("Hello world b= $transition$");
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="c">
+			<body>
+			System.out.println("Hello world c = $transition$  "+ f);
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="d">
+			<body>
+			System.out.println("Hello world d = $transition$  ");
+			</body>
+		</transitionImplementation>
+	</transitions>
+</diezelImplementation>

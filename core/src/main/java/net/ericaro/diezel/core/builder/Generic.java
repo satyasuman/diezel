@@ -1,5 +1,10 @@
 package net.ericaro.diezel.core.builder;
 
+/** Simple way to handle generics: with a name, a super expression and extends expression
+ * 
+ * @author eric
+ *
+ */
 public class Generic {
 
 	
@@ -8,33 +13,36 @@ public class Generic {
 	String extendsType;
 	
 	
-	
+	/** construct a simple generic
+	 * 
+	 * @param name
+	 */
 	public Generic(String name) {
 		super();
 		this.name = name;
 	}
-	public Generic(String name, String extendsType) {
+	/** construct a generic with a name, and a super type or an extendstype. one of the two latest must be null to complies with java language 
+	 * 
+	 * @param name
+	 * @param superType
+	 * @param extendsType
+	 */
+	public Generic(String name, String extendsType,String superType) {
 		super();
 		this.name = name;
+		assert name!=null && ( superType== null || extendsType == null)  : "name must be not null, and only one of supertype, or extends type can be non null"; 
 		this.extendsType = extendsType;
+		this.superType = superType;
 	}
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
+	
 	public String getSuper() {
 		return superType;
 	}
-	public void setSuperType(String superType) {
-		this.superType = superType;
-	}
 	public String getExtends() {
 		return extendsType;
-	}
-	public void setExtendsType(String extendsType) {
-		this.extendsType = extendsType;
 	}
 	@Override
 	public String toString() {

@@ -1,0 +1,87 @@
+//<! main entry point from the compiler!>
+languageStateUnit(state,lang) ::= <<
+/*
+<lang.header>
+*/
+package <lang.packageName> ;
+/**
+*
+*/
+public interface <state.name><genericDefinition(state.generics)> {
+    <state.transitions:languageTransitionDefinition(lang)>
+}
+>>
+
+implementationUnit(lang) ::= <<
+/*
+<lang.header>
+*/
+package <lang.packageName> ;
+<!generates the start as the top level class, all other states as inner classes !>
+<lang.parent.states:importJava(lang.parent)>
+
+/**
+
+*/
+public class <lang.startState.name><genericDefinition(lang.startState.generics)> implements <stateUsage(lang.startState.parent)>{
+    <lang.startState.transitions:implementationTransitionDefinition(lang)>
+    <lang.states:implementationStateUnit(lang)>
+}
+>>
+//<! END OF Entry point, now calls are internal stuff !>
+
+transitionDefinition(transition, lang)::= <<
+/**
+<transition.javadoc>
+**/
+public <genericDefinition(transition.push)> <if(transition.nextState.output)><transition.returnType><else><stateUsage(transition.nextState)><endif> <transition.signature> 
+>>
+
+stateDefinition(state) ::= "<state.name><genericDefinition(state.generics)>"
+stateUsage(state) ::= "<state.name><genericUsage(state.generics)>"
+
+//<! generic definition differs from usage by the declaration of super or extends !>
+genericDefinition(generics) ::="<if(first(generics) )> \<<generics:singleGenericDefinition();separator=\", \">> <endif> "
+singleGenericDefinition(generic)::= "<generic.name><if (generic.extends)> extends <generic.extends><elseif(generic.superType)>super <generic.superType><endif>"
+
+//<! simple <U,V> like stuff or empty!> 
+genericUsage(generics) ::="<if(first(generics) )> \<<generics:singleGenericUsage();separator=\", \">> <endif> "
+singleGenericUsage(generic)::= "<generic.name>"
+
+importJava(state, lang) ::= <<
+<if (!state.output)>
+import <lang.packageName>.<state.name> ;
+<endif>
+>>
+
+//<!  shared among lang, and implementation, be carefull!>
+
+
+implementationStateUnit(state,lang)::= <<
+<if (!state.output)>
+<if (! state.input ) >
+/**
+*/
+public class <state.name><genericDefinition(state.generics)> implements <stateUsage(state.parent)> {
+    <state.transitions:implementationTransitionDefinition(lang)>
+}
+<endif>
+<endif>
+>>
+
+
+languageTransitionDefinition(transition, lang) ::= "<transitionDefinition(transition, lang)> ;"
+
+implementationTransitionDefinition(transition, lang) ::= <<
+<transitionDefinition(transition.parent, lang)> {
+	<transition.body>
+	<if(!transition.nextState.output)>
+	return new <stateUsage(transition.nextState)> () ;
+<endif>
+}
+>>
+
+
+
+
+

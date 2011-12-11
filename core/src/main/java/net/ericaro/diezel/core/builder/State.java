@@ -1,37 +1,36 @@
 package net.ericaro.diezel.core.builder;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
+import edu.uci.ics.jung.graph.DirectedGraph;
+
+/** represent a state in the EDSL, i.e. an interface with methods
+ * 
+ * @author eric
+ *
+ */
 public class State {
 
 	
-	List<Transition> transitions = new ArrayList<Transition>();
-	List<Generic> generics = new ArrayList<Generic>();
-	
 	String name;
+	List<Generic> generics = new ArrayList<Generic>();
 	boolean isOutput = false;
+	private DirectedGraph<State, TransitionInstance> graph;
+	private boolean input;
 	
 	
-	public State() {
+	State(DirectedGraph<State, TransitionInstance> graph, boolean input, boolean output) {
 		super();
+		this.graph = graph;
+		this.isOutput = output;
+		this.input = input;
 	}
-
 	
-
 	public String getName() {
 		return name;
 	}
-
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
 
 	String asJavaType(){
 		StringBuilder sb = new StringBuilder();
@@ -44,27 +43,15 @@ public class State {
 		return sb.toString() ;
 	}
 
-
-
-
-
 	public List<Generic> getGenerics() {
 		return generics;
 	}
 
+	
 
-
-	public List<Transition> getTransitions() {
-		return transitions;
+	public boolean isInput() {
+		return input;
 	}
-
-
-
-	void setTransitions(List<Transition> transitions) {
-		this.transitions = transitions;
-	}
-
-
 
 	public boolean isOutput() {
 		return isOutput;
@@ -80,7 +67,9 @@ public class State {
 			return sb.toString();
 	}
 	
-	
+	public Collection<TransitionInstance> getTransitions(){
+		return graph.getOutEdges(this);
+	}
 	
 	
 }

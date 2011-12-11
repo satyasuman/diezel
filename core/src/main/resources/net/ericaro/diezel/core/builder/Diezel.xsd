@@ -15,7 +15,7 @@
 				<xs:documentation source="description">
 					generic type name, usually
 					U or V
-			</xs:documentation>
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="super" type="xs:string">
@@ -36,18 +36,23 @@
 		</xs:attribute>
 	</xs:complexType>
 
-	<xs:element name="transitions">
+	<xs:element name="package" type="xs:string" >
 		<xs:annotation>
 			<xs:documentation source="description">
-				the set of transition, that
-				are referenced in the language expression
+				java fully qualified
+				package name where to generate all the code.
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="transition" minOccurs="1" maxOccurs="unbounded" />
-			</xs:sequence>
-		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="guide" type="xs:string">
+		<xs:annotation>
+			<xs:documentation source="description">
+				base name for the
+				default
+				name for every state class.
+			</xs:documentation>
+		</xs:annotation>
 	</xs:element>
 
 	<xs:element name="states">
@@ -55,7 +60,8 @@
 			<xs:documentation source="description">
 				a list of states, as they
 				appear in the expression language, using the transition list
-				as preffered order.
+				as
+				preffered order.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -64,7 +70,7 @@
 					<xs:annotation>
 						<xs:documentation source="description">
 							a simple state name
-			</xs:documentation>
+						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
 			</xs:sequence>
@@ -138,6 +144,31 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="transitionImplementation">
+		<xs:annotation>
+			<xs:documentation source="description">
+				a transitionImplementation
+				is an
+				"concrete" method call that lead the EDSL engine from one state
+				to
+				another.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+			<xs:element name="body" type="xs:string" minOccurs="1"/>
+			</xs:all>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation source="description">
+						the transition name or
+						alias, as it is referenced in the language expression.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="diezel">
 		<xs:annotation>
 			<xs:documentation source="description">
@@ -148,14 +179,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-				<xs:element name="package" type="xs:string" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation source="description">
-							java fully qualified
-							package name where to generate all the code.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
+				<xs:element ref="package" minOccurs="1" />
 				<xs:element name="header" type="xs:string" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation source="description">
@@ -173,14 +197,7 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="guide" type="xs:string" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation source="description">
-							base name for the
-							default name for every state class.
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
+				<xs:element ref="guide" minOccurs="0" />
 				<xs:element name="expression" type="xs:string" minOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
@@ -190,9 +207,68 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="transitions" minOccurs="1" />
+				<xs:element name="transitions" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation source="description">
+							the set of transition,
+							that
+							are referenced in the language expression
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="transition" minOccurs="1" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element ref="states" minOccurs="1" />
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
+
+	<xs:element name="diezelImplementation">
+		<xs:annotation>
+			<xs:documentation source="description">
+				diezel implementation top
+				level element.
+				Fully defines an Embedded Domain Specific
+				Language
+				Implementation.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="implements" type="xs:string" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation source="description">
+							a qualified name to the
+							diezel language that it implements.
+							A qualified name is the java
+							qualified name of the the first Guide
+							for the language:
+							net.ericaro.diezel.MyGuide
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="package" minOccurs="1" />
+				<xs:element ref="guide" minOccurs="0" />
+				<xs:element name="transitions" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation source="description">
+							the set of transition,
+							that
+							are referenced in the language expression
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="transitionImplementation" minOccurs="1"
+								maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>
