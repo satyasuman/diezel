@@ -3,7 +3,7 @@
 	<groupId>net.ericaro</groupId>
 	<artifactId>diezel-reactor</artifactId>
 	<name>diezel reactor</name>
-	<version>1.0.0-beta--684</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<description>Reactor for diezel projects</description>
 	<packaging>pom</packaging>
 	<modules>
@@ -35,9 +35,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:http://diezel.googlecode.com/svn/tags/diezel-reactor-1.0.0-beta--684</connection>
-		<developerConnection>scm:svn:https://diezel.googlecode.com/svn/tags/diezel-reactor-1.0.0-beta--684</developerConnection>
-		<url>http://diezel.googlecode.com/svn/tags/diezel-reactor-1.0.0-beta--684</url>
+		<connection>scm:svn:http://diezel.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://diezel.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://diezel.googlecode.com/svn/trunk/</url>
 	</scm>
 	<licenses>
 		<license>

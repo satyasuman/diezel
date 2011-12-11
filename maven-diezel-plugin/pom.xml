@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ericaro</groupId>
 	<artifactId>diezel-maven-plugin</artifactId>
-	<version>1.0.0-beta--684</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>maven plugin for diezel Embedded Domain Specific Language Generator</name>
 
@@ -25,7 +25,7 @@
 		<dependency>
 			<groupId>net.ericaro</groupId>
 			<artifactId>diezel-core</artifactId>
-			<version>1.0.0-beta--684</version>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
@@ -47,9 +47,9 @@
 	</distributionManagement>
 
 	<scm>
-		<connection>scm:svn:http://diezel.googlecode.com/svn/tags/diezel-reactor-1.0.0-beta--684</connection>
-		<developerConnection>scm:svn:https://diezel.googlecode.com/svn/tags/diezel-reactor-1.0.0-beta--684</developerConnection>
-		<url>http://diezel.googlecode.com/svn/tags/diezel-reactor-1.0.0-beta--684</url>
+		<connection>scm:svn:http://diezel.googlecode.com/svn/trunk/</connection>
+		<developerConnection>scm:svn:https://diezel.googlecode.com/svn/trunk/</developerConnection>
+		<url>http://diezel.googlecode.com/svn/trunk/</url>
 	</scm>
 	<licenses>
 		<license>
