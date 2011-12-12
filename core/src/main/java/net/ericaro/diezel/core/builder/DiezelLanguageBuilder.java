@@ -92,8 +92,9 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 		
 		// build a map for states, and append vertices
 		Map<Integer, State> stateTypes = new HashMap<Integer, State>();
+		int i = 0;
 		for (S s : g.states) {
-			State state = new State(graph, s.equals(g.in), s.equals(g.out));
+			State state = new State(graph, guideBaseName+(++i), s.equals(g.in), s.equals(g.out));
 			if (s.equals(g.out))
 				end = state;
 			if (s.equals(g.in))

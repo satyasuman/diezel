@@ -23,7 +23,7 @@ package <lang.packageName> ;
 /**
 
 */
-public class <lang.startState.name><genericDefinition(lang.startState.generics)><if(lang.extends)> extends <lang.extends> <endif>implements <stateUsage(lang.startState.parent)>{
+public class <lang.startState.name><genericDefinition(lang.startState.generics)><if(lang.extends)> extends <lang.extends> <endif> implements <stateUsage(lang.startState.parent)>{
     <lang.startState.transitions:implementationTransitionDefinition(lang)>
     <lang.states:implementationStateUnit(lang)>
 }

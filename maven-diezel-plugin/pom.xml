@@ -5,7 +5,8 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>maven-plugin</packaging>
 	<name>maven plugin for diezel Embedded Domain Specific Language Generator</name>
-
+<description>An Embedded Domain Specific Language Parser Generator PLugin compiler</description>
+	
 	<properties>
 		<googlecode>diezel</googlecode>
 		<mvn.version>2.0.4</mvn.version>
@@ -68,6 +69,38 @@
 			</roles>
 		</developer>
 	</developers>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.0</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		</profiles>
+		
+	
+	
 	<build>
 		<plugins>
 			<plugin>

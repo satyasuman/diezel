@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diezelImplementation xmlns="http://diezel.ericaro.net/2.0.0/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<implements>net.ericaro.diezel.xml.DemoBuilder</implements>
+	<package>net.ericaro.diezel.xml</package>
+	<name>DemoBuilderImpl</name>
+	<transitions>
+		<transitionImplementation name="a">
+			<body>
+			System.out.println("with A = "+a);
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="b">
+			<body>
+			System.out.println("with B = "+b);
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="c">
+			<body>
+			System.out.println("with C = "+c);
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="d">
+			<body>
+			System.out.println("with D = "+d);
+			</body>
+		</transitionImplementation>
+		<transitionImplementation name="build">
+			<body>
+			System.out.println("And ... Done.");
+			</body>
+		</transitionImplementation>
+	</transitions>
+</diezelImplementation>

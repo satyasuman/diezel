@@ -137,7 +137,7 @@ chain methods.
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="return" type="xs:string" default="void"
-					maxOccurs="1">
+					minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
 							the actual return type
@@ -207,15 +207,15 @@ given the state path to it.
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
-				<xs:element ref="package" minOccurs="1" />
-				<xs:element name="header" type="xs:string" minOccurs="0">
+				<xs:element ref="package" minOccurs="1" maxOccurs="1"/>
+				<xs:element name="header" type="xs:string" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">header string for every generated file.
 						without the /* */ symbols
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="capture" type="generic" minOccurs="0">
+				<xs:element name="capture" type="generic" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">add a generic to be captured by this transition, 
 and append it to the next state.
@@ -226,19 +226,19 @@ captures the generic "T".
 </xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="name" minOccurs="0" >
+				<xs:element ref="name" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation>The java name for this language, or language implementation.
 </xs:documentation>
 					</xs:annotation></xs:element>
-				<xs:element name="expression" type="xs:string" minOccurs="1">
+				<xs:element name="expression" type="xs:string" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">the regular expression that defines the state/transition network.
 example: "a|b,c,d?, e*"
 See Diezel site for available operators.</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="transitions" minOccurs="1">
+				<xs:element name="transitions" minOccurs="1" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">Transitions that defines this language.</xs:documentation>
 					</xs:annotation>
@@ -248,7 +248,7 @@ See Diezel site for available operators.</xs:documentation>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element ref="states" minOccurs="1" >
+				<xs:element ref="states" minOccurs="0" maxOccurs="1" >
 					<xs:annotation>
 						<xs:documentation>states are self defined by the regular expression. Here you can overwrite
 those definitions, mapping every state by its path.</xs:documentation>

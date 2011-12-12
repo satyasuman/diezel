@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diezel xmlns="http://diezel.ericaro.net/2.0.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<package>net.ericaro.diezel.xml</package>
+	<name>DemoBuilder</name>
+	<expression>(a,b|c,d), build</expression>
+	<transitions>
+		<transition name="a">
+			<signature>withA(int a)</signature>
+		</transition>
+		<transition name="b">
+			<signature>withB(int b)</signature>
+		</transition>
+		<transition name="c">
+			<signature>withC(double c)</signature>
+		</transition>
+		<transition name="d">
+			<signature>withD(double d)</signature>
+		</transition>
+		<transition name="build">
+			<signature>build()</signature>
+		</transition>
+	</transitions>
+</diezel>

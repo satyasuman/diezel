@@ -21,11 +21,12 @@ public class State {
 	private boolean input;
 	
 	
-	State(DirectedGraph<State, TransitionInstance> graph, boolean input, boolean output) {
+	State(DirectedGraph<State, TransitionInstance> graph, String name, boolean input, boolean output) {
 		super();
 		this.graph = graph;
 		this.isOutput = output;
 		this.input = input;
+		this.name = name;
 	}
 	
 	public String getName() {

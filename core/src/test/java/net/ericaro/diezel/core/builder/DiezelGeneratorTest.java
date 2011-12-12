@@ -15,7 +15,8 @@ public class DiezelGeneratorTest extends TestCase {
 	public void testSimple() throws DiezelException, IOException{
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/generated-sources/test/");
-		Diezel.generate(target, new File("./src/test/resources/simpleImpl.xml"), new File("./src/test/resources/simple.xml"));
+		File src = new File("./src/test/resources/");
+		Diezel.generate(target, new File(src, "demo.xml"));
 		Graph.dot(new File(target, "net/ericaro/diezel/xml/guide-graph").getPath());
 		
 	}
