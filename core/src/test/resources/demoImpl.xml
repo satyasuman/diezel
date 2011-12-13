@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<implements>net.ericaro.diezel.xml.DemoBuilder</implements>
 	<package>net.ericaro.diezel.xml</package>
-	<name>DemoBuilderImpl</name>
+	<name>My</name>
 	<transitions>
 		<transitionImplementation name="a">
 			<body>
@@ -27,8 +27,9 @@
 		</transitionImplementation>
 		<transitionImplementation name="build">
 			<body>
-			System.out.println("And ... Done.");
-			</body>
+				System.out.println("And ... .");
+				System.out.println("Done.");
+				</body>
 		</transitionImplementation>
 	</transitions>
 </diezelImplementation>

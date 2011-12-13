@@ -8,11 +8,12 @@ import edu.uci.ics.jung.graph.Graph;
 
 public class DiezelImplementation implements Compilable{
 
-	DiezelLanguage language;
-	String extendClass;
+	String packageName; //package
+	public String guideName; // class 
+	String extendClass; // extends 
+	DiezelLanguage language; // implements 
 	Graph<StateImplementation, TransitionImplementationInstance> graph;
 	List<TransitionImplementation> transitions;
-	String packageName;
 	StateImplementation start;
 	public String getPackageName() {
 		return packageName;

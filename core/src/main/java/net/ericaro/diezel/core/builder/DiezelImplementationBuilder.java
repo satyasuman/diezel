@@ -71,6 +71,7 @@ public class DiezelImplementationBuilder implements DiezelBuilder<DiezelImplemen
 		impl.packageName = packageName;
 		impl.start = start;
 		impl.extendClass = extendClass;
+		impl.guideName = guideName;
 		return impl;
 	}
 	
@@ -93,7 +94,7 @@ public class DiezelImplementationBuilder implements DiezelBuilder<DiezelImplemen
 		// build a map for st to st impl, and add st impl into the graph
 		Map<State, StateImplementation> stateMap = new HashMap<State, StateImplementation>();
 		for( State st: pg.getVertices()){
-			StateImplementation impl = new StateImplementation(graph, st);
+			StateImplementation impl = new StateImplementation(graph, st, guideName);
 			stateMap.put(st, impl);
 			graph.addVertex(impl);
 			if (st == language.start)

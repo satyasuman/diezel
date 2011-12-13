@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <diezelImplementation xmlns="http://diezel.ericaro.net/2.0.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<package>net.ericaro.diezel.impl</package>
-	<name>MyGuideImpl</name>
+	<name>BuilderImpl</name>
 	<extends>net.ericaro.diezel.core.builder.AbstractGuide</extends>
 	<implements>net.ericaro.diezel.xml.MyGuide</implements>
 	<transitions>

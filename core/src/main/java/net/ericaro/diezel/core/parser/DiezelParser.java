@@ -187,6 +187,7 @@ public class DiezelParser extends DefaultHandler {
 			transition.setSignature(str);
 			break;
 		}
+		currentElement = null; //read
 	}
 
 	@Override

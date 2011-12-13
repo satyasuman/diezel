@@ -51,8 +51,8 @@ public class DiezelCompiler {
 		ST compileUnit = templates.getInstanceOf("implementationUnit");
 		compileUnit.add("lang", lang);
 		String result = compileUnit.render();
-		System.out.println("-------------------------------------------");
-		System.out.println(result);
+//		System.out.println("-------------------------------------------");
+//		System.out.println(result);
 		return result;
 	}
 	

@@ -1,6 +1,7 @@
 package net.ericaro.diezel.core.builder;
 
 import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroupString;
 
 /** Represent the extra amount of information needed for an implementation of a given transition.
  * 

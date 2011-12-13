@@ -18,14 +18,15 @@ public class StateImplementation {
 	private String name;
 	private DirectedGraph<StateImplementation, TransitionImplementationInstance> graph;
 
-	public StateImplementation(DirectedGraph<StateImplementation, TransitionImplementationInstance> graph, State prototype) {
+	public StateImplementation(DirectedGraph<StateImplementation, TransitionImplementationInstance> graph, State prototype, String name) {
 		super();
 		this.parent = prototype;
 		this.graph = graph;
+		this.name = name;
 	}
 
 	public String getName() {
-		return parent.getName()+"Impl"; // TODO use a smarter rename strategy
+		return name+parent.getName();
 	}
 
 	
