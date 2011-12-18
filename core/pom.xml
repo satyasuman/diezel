@@ -3,7 +3,7 @@
 	<groupId>net.ericaro</groupId>
 	<artifactId>diezel-core</artifactId>
 	<name>Diezel Parser Generator for Java</name>
-	<version>1.0.0-beta-3</version>
+	<version>1.0.0-beta-4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>An Embedded Domain Specific Language Parser Generator</description>
 	<properties>
