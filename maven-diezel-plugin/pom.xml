@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.ericaro</groupId>
 	<artifactId>diezel-maven-plugin</artifactId>
-	<version>1.0.0-beta-3-SNAPSHOT</version>
+	<version>1.0.0-beta-3</version>
 	<packaging>maven-plugin</packaging>
 	<name>maven plugin for diezel Embedded Domain Specific Language Generator</name>
 <description>An Embedded Domain Specific Language Parser Generator PLugin compiler</description>
@@ -26,7 +26,7 @@
 		<dependency>
 			<groupId>net.ericaro</groupId>
 			<artifactId>diezel-core</artifactId>
-			<version>1.0.0-beta-3-SNAPSHOT</version>
+			<version>1.0.0-beta-3</version>
 		</dependency>
 	</dependencies>
 
