@@ -68,6 +68,7 @@ public class GraphBuilder implements DiezelSax<Graph> {
 	public void flow(Graph g) {
 		g.reduce();
 		g.unimplicit();
+		g.unDuplicate() ;
 		this.graph = g;
 	}
 

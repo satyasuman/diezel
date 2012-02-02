@@ -23,6 +23,17 @@ public class DiezelGeneratorTest extends TestCase {
 		
 	}
 	
+	
+	public void testS4() throws DiezelException, IOException{
+		//Diezel.generate(, new File("./target/"));
+		File target = new File("./target/s4/");
+		File src = new File("./src/test/resources/");
+		Diezel.generate(target, new File(src, "s4.xml"));
+		Graph.dot(new File(target, "org/apache/s4/core/edsl/guide-graph").getPath());
+		
+	}
+	
+	
 	public void atestGraphs() throws Exception{
 		GraphBuilder.toFile("a&b&c", "target/bang");
 		

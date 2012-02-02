@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import net.ericaro.diezel.core.builder.FileUtils;
+import net.ericaro.diezel.core.parser.Graph.T;
 
 
 /**
@@ -25,6 +26,7 @@ import net.ericaro.diezel.core.builder.FileUtils;
  * 
  */
 public class Graph {
+	public static boolean DEBUG = false;
 	static int ids = 0; // dead simple id generator
 
 	/** S stands for "state", it's a node.
@@ -188,7 +190,13 @@ public class Graph {
 		transitions.add(t);
 		return t;
 	}
-
+	
+	public T copyOfT(T t) {
+		T copied = newT();
+		t.copyTo(copied);
+		return copied ;
+	}
+	
 	/** connect two nodes, and return the corresponding transition.
 	 * 
 	 * @param in
@@ -360,27 +368,47 @@ public class Graph {
 			*/
 			//alg: simply copy the out out interface into the in out interface
 			for(T outout: out.outs){
-				T copied = newT();
-				outout.copyTo(copied);
+				T copied = copyOfT(outout);
 				// now changes the connections
 				copied.in = in;
 				in.outs.add(copied);
 			}
-			
-			
-			
-			
+			//log(this, "unimplicit");
 			t= nextImplicit();
-			//log(this);
 		}
+	}
+	
+	/** totally remove duplicated transitions.
+	 * 
+	 */
+	public void unDuplicate(){
+		
+		for(S s : states) {
+			
+			ArrayList<T> newOut  = new ArrayList<T>();
+			HashSet<String> names = new HashSet<String>();
+			for (T t: s.outs )
+				if (names.add(t.name) )
+					newOut.add(t);
+			s.outs = newOut ;
+				
+			}
+		
 	}
 
 	
 
 	
-	//static int debugCount=0;
+	static int debugCount=0;
 	public static void log(Graph g){
-		//try {	g.graph("target/debug"+ ++debugCount);		} catch (IOException e) {}
+		log(g, "debug");
+	}
+	public static void log(Graph g, String name){
+		if (DEBUG) {
+		try {	
+			g.graph("target/diezel"+name+ ++debugCount);		
+			} catch (IOException e) {}
+		}
 	}
 	
 // STARTS THE TOP OPERATORS

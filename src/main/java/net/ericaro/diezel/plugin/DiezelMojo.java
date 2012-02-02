@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import net.ericaro.diezel.core.Diezel;
 import net.ericaro.diezel.core.DiezelException;
 import net.ericaro.diezel.core.parser.DiezelParser;
+import net.ericaro.diezel.core.parser.Graph;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -64,6 +65,14 @@ public class DiezelMojo extends AbstractMojo {
      * @parameter expression="${lastModGranularityMs}" default-value="0"
      */
     private int staleMillis;
+    
+    /**
+     * Verbose mode
+     * 
+     * @parameter expression="${debug}" default-value="false"
+     */
+    private boolean debug;
+    
 
     /**
      * A set of Ant-like inclusion patterns used to select files from the source directory for processing. By default,
@@ -146,6 +155,9 @@ public class DiezelMojo extends AbstractMojo {
 	 *             If the tool reported a non-zero exit code.
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		
+		Graph.DEBUG= debug ;
+		
 		File[] diezels = scanForDiezels();
 		getLog().info("starting Diezel compilation from: " + getSourceDirectory());
 
