@@ -8,6 +8,7 @@ import org.stringtemplate.v4.ST;
 import junit.framework.TestCase;
 import net.ericaro.diezel.core.Diezel;
 import net.ericaro.diezel.core.DiezelException;
+import net.ericaro.diezel.core.exceptions.UndefinedTransitionException;
 import net.ericaro.diezel.core.parser.Graph;
 import net.ericaro.diezel.core.parser.GraphBuilder;
 
@@ -30,6 +31,20 @@ public class DiezelGeneratorTest extends TestCase {
 		File src = new File("./src/test/resources/");
 		Diezel.generate(target, new File(src, "s4.xml"));
 		Graph.dot(new File(target, "org/apache/s4/core/edsl/guide-graph").getPath());
+		
+	}
+	
+	public void testIssue8() throws DiezelException, IOException{
+		//Diezel.generate(, new File("./target/"));
+		File target = new File("./target/issue8/");
+		File src = new File("./src/test/resources/");
+		try {
+			Diezel.generate(target, new File(src, "issue8.xml"));
+		} catch (UndefinedTransitionException e) {
+			return;
+		}
+		assert false: "undefined transition exception was expected !" ;
+		
 		
 	}
 	
