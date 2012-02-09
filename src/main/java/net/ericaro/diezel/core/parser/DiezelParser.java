@@ -85,12 +85,11 @@ public class DiezelParser extends DefaultHandler {
 	private TransitionImplementation transitionImpl;
 	
 	private Elements currentElement;
-
+	private StringBuilder stringBuilder;
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		assert uri == XMLNS : "illegal elementn outside the xmlns";
-
+		assert uri == XMLNS : "illegal elemennt outside the xmlns";
 		currentElement = Elements.byName(localName);
 		assert currentElement !=null : "found and unknown element "+localName;
 		switch (currentElement) {
@@ -143,15 +142,28 @@ public class DiezelParser extends DefaultHandler {
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
+		if (stringBuilder !=null) parseString() ;
 		if (Elements.TRANSITION.name.equals(localName))
 			transition = null;
+		
 	}
 
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (currentElement == null)
 			return;
-		String str = new String(ch, start, length).trim();
+		if (stringBuilder == null)
+			stringBuilder = new StringBuilder() ;
+		stringBuilder.append(ch, start, length);
+	}
+	
+	public void parseString() {
+		
+		String str = stringBuilder.toString() ;
+		stringBuilder = null ;
+		
+		if (currentElement == null)
+			return;
 		switch (currentElement) {
 		case PACKAGE:
 			builder.setPackageName(str);
@@ -187,7 +199,7 @@ public class DiezelParser extends DefaultHandler {
 			transition.setSignature(str);
 			break;
 		}
-		currentElement = null; //read
+		currentElement = null;
 	}
 
 	@Override

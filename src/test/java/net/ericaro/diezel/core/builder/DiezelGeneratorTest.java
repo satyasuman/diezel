@@ -48,6 +48,14 @@ public class DiezelGeneratorTest extends TestCase {
 		
 	}
 	
+	public void testIssue10() throws DiezelException, IOException{
+		//Diezel.generate(, new File("./target/"));
+		File target = new File("./target/issue10/");
+		File src = new File("./src/test/resources/");
+		Diezel.generate(target, new File(src, "issue10.xml"));
+		// the file is ok, there should be not exeception
+	}
+	
 	
 	public void atestGraphs() throws Exception{
 		GraphBuilder.toFile("a&b&c", "target/bang");
