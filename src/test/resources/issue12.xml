@@ -2,11 +2,11 @@
 <diezel xmlns="http://diezel.ericaro.net/2.0.0/">
 	<package>org.apache.s4.core.edsl</package>
 	<name>S4DSL</name>
-	<expression>(pe , type , (fireOn , ifInterval? )? , (timer, withPeriod)? , (cache, size , expires? )? , asSingleton? , (emitEvent, onField?, onKey?, to )*  )+ , info?, build</expression>
+	<expression>(pe, type , (fireOn , ifInterval? )? , (timer, withPeriod)? , (cache, size , expires? )? , asSingleton? , (emitEvent, onField?, onKey?, to )*  )+ , info?, build</expression>
 	<transitions>
-		<transition name="pe">
+		<!-- <transition name="pe">
 			<signature>pe()</signature>
-		</transition>
+		</transition> -->
 		<transition name="type">
 			<signature>type()</signature>
 		</transition>

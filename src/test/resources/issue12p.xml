@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diezel xmlns="http://diezel.ericaro.net/2.0.0/">
+	<package>org.apache.s4.core</package>
+	<name>S4DSL</name>
+	<expression>(a, (b1,b2)* )+,build</expression>
+	<transitions>
+		<transition name="a">
+			<signature>a()</signature>
+		</transition>
+		<transition name="b1">
+			<signature>b1()</signature>
+		</transition>
+		<transition name="b2">
+			<signature>b2()</signature>
+		</transition>
+		<transition name="build">
+			<signature>build()</signature>
+		</transition>
+		
+	</transitions>
+</diezel>

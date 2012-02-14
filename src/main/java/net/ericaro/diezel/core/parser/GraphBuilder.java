@@ -66,9 +66,13 @@ public class GraphBuilder implements DiezelSax<Graph> {
 	// SAX IMPLEMENTATION FOLLOWS
 
 	public void flow(Graph g) {
+		Graph.log(g, "post-definition");
 		g.reduce();
+		Graph.log(g, "post-reduce");
 		g.unimplicit();
+		Graph.log(g, "post-unimplicit");
 		g.unDuplicate() ;
+		Graph.log(g, "post-unduplicate");
 		this.graph = g;
 	}
 

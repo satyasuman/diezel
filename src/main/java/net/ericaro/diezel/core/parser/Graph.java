@@ -328,12 +328,29 @@ public class Graph {
 	 */
 	public void reduce() {
 
+		log(this, "shortcut");
 		Set<T> shortcutable = new HashSet<T>();
 		for (T t : transitions)
-			if (t.implicit && (t.in.outs.size() == 1 || t.out.ins.size() == 1 ))
+			if (	t.implicit 
+					&& 
+					(
+							(t.in.outs.size() == 1 && ! isInorOut(t.in) )
+							|| 
+							(t.out.ins.size() == 1 && ! isInorOut(t.out) ) 
+					)
+				)
 				shortcutable.add(t);
-		for (T t : shortcutable)
+		for (T t : shortcutable) {
 			shortcut(t);
+			log(this, "shortcut");
+		}
+			
+		log(this);
+		
+	}
+	
+	public boolean isInorOut(S state) {
+		return state==this.in || state == this.out;
 	}
 	
 	private T nextImplicit(){
