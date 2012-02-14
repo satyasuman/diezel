@@ -3,14 +3,14 @@ package net.ericaro.diezel.core.builder;
 import java.io.File;
 import java.io.IOException;
 
-import org.stringtemplate.v4.ST;
-
 import junit.framework.TestCase;
 import net.ericaro.diezel.core.Diezel;
 import net.ericaro.diezel.core.DiezelException;
 import net.ericaro.diezel.core.exceptions.UndefinedTransitionException;
 import net.ericaro.diezel.core.parser.Graph;
 import net.ericaro.diezel.core.parser.GraphBuilder;
+
+import org.stringtemplate.v4.ST;
 
 public class DiezelGeneratorTest extends TestCase {
 
