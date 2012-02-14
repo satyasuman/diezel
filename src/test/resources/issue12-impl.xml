@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<diezelImplementation xmlns="http://diezel.ericaro.net/2.0.0/"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<implements>net.ericaro.diezel.xml.DemoBuilder</implements>
+	<package>net.ericaro.diezel</package>
+	<name>My</name>
+	<transitions>
+		<transitionImplementation name="a">
+			<body>
+			System.out.println("a");
+			System.out.println("a");
+			System.out.println("a");
+			System.out.println("a");
+			</body>
+		</transitionImplementation>
+		
+	</transitions>
+</diezelImplementation>

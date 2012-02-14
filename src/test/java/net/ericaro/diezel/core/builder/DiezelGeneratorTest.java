@@ -43,14 +43,9 @@ public class DiezelGeneratorTest extends TestCase {
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/issue12p/");
 		File src = new File("./src/test/resources/");
-		try {
-			Graph.DEBUG = true;
-			Diezel.generate(target, new File(src, "issue12p.xml"));
-			Graph.dot(new File(target, "org/apache/s4/core/guide-graph").getPath());
-		} catch (UndefinedTransitionException e) {
-			return;
-		}
-		assert false: "undefined transition exception was expected !" ;
+		Graph.DEBUG = true;
+		Diezel.generate(target, new File(src, "issue12p.xml"));
+		Graph.dot(new File(target, "org/apache/s4/core/guide-graph").getPath());
 		
 		
 	}
