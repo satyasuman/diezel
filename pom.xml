@@ -186,6 +186,7 @@
 						<localCheckout>true</localCheckout>
 						<pushChanges>false</pushChanges>
 						<tagNameFormat>@{project.version}</tagNameFormat>
+                        <mavenExecutorId>forked-path</mavenExecutorId> 
 					</configuration>
 				</plugin>
 				<plugin>
