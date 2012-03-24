@@ -43,7 +43,7 @@ public class DiezelGeneratorTest extends TestCase {
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/issue12p/");
 		File src = new File("./src/test/resources/");
-		Graph.DEBUG = true;
+		//Graph.DEBUG = true;
 		Diezel.generate(target, new File(src, "issue12p.xml"));
 		Graph.dot(new File(target, "org/apache/s4/core/guide-graph").getPath());
 		
@@ -57,6 +57,13 @@ public class DiezelGeneratorTest extends TestCase {
 		// the file is ok, there should be not exeception
 	}
 	
+	public void testGeneric() throws DiezelException, IOException{
+		//Diezel.generate(, new File("./target/"));
+		File target = new File("./target/issueGeneric/");
+		File src = new File("./src/test/resources/");
+		Diezel.generate(target, new File(src, "demoGeneric.xml"));
+		// the file is ok, there should be not exeception
+	}
 	
 	public void atestGraphs() throws Exception{
 		GraphBuilder.toFile("a&b&c", "target/bang");

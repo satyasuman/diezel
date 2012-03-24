@@ -86,7 +86,7 @@ public class GraphBuilderTest  extends TestCase {
 		body =body.replaceAll("\n", " ");
 		body =body.replaceAll("\t", " ");
 		body =body.replaceAll(" +", " ");
-		return body.trim();
+                                                                                             		return body.trim();
 	}
 	
 }

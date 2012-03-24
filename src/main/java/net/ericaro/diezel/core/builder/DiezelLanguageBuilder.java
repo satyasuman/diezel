@@ -160,7 +160,7 @@ public class DiezelLanguageBuilder implements DiezelBuilder<DiezelLanguage> {
 	}
 
 	private State getStateByPath(String key) {
-		String[] elements = key.split(",");
+		String[] elements = key.split("\\.");
 		State current = start;
 		for (String next : elements) {
 			for (TransitionInstance t : graph.getOutEdges(current)) {
