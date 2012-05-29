@@ -1,12 +1,12 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.impl;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import net.ericaro.diezel.builder.lang.DiezelLanguage;
 import edu.uci.ics.jung.graph.Graph;
 
-public class DiezelImplementation implements Compilable{
+public class DiezelImplementation {
 
 	String packageName; //package
 	public String guideName; // class 

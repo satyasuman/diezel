@@ -1,4 +1,6 @@
-package net.ericaro.diezel.core;
+package net.ericaro.diezel.builder.lang;
+
+import net.ericaro.diezel.DiezelException;
 
 public class InconsistentTypePathException extends DiezelException {
 

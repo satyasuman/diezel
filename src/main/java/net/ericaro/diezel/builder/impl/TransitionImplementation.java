@@ -1,4 +1,6 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.impl;
+
+import net.ericaro.diezel.builder.lang.Transition;
 
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroupString;

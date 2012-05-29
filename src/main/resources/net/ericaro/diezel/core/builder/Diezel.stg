@@ -14,7 +14,7 @@ public interface <state.name><genericDefinition(state.generics)> {
 
 implementationUnit(lang) ::= <<
 /*
-<lang.header>
+<lang.header> 
 */
 package <lang.packageName> ;
 <!generates the start as the top level class, all other states as inner classes !>

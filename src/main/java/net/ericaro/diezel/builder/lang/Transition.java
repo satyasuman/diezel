@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.lang;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,20 +82,4 @@ public class Transition {
 	public String getReturnType() {
 		return returnType;
 	}
-	
-	/** Graph are actually made of "instances" of transition, since a transition can lay in several edges of the graph.
-	 * 
-	 * @param graph
-	 * @return
-	 */
-	public TransitionInstance newInstance(DirectedGraph<State, TransitionInstance> graph) {
-		return new TransitionInstance(this, graph);
-	}
-
-
-
-	
-	
-	
-	
 }

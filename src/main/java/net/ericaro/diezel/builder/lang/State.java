@@ -1,10 +1,10 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.lang;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import edu.uci.ics.jung.graph.DirectedGraph;
+import net.ericaro.diezel.builder.StringUtils;
 
 /** represent a state in the EDSL, i.e. an interface with methods
  * 
@@ -16,23 +16,14 @@ public class State {
 	
 	String name;
 	List<Generic> generics = new ArrayList<Generic>();
-	boolean isOutput = false;
-	private DirectedGraph<State, TransitionInstance> graph;
-	private boolean input;
+	private DiezelGrex	grex;
 	
-	
-	State(DirectedGraph<State, TransitionInstance> graph, String name, boolean input, boolean output) {
-		super();
-		this.graph = graph;
-		this.isOutput = output;
-		this.input = input;
-		this.name = name;
-	}
+	State(){}
 	
 	public String getName() {
 		return name;
 	}
-
+	
 	String asJavaType(){
 		StringBuilder sb = new StringBuilder();
 		sb.append(name);
@@ -51,11 +42,11 @@ public class State {
 	
 
 	public boolean isInput() {
-		return input;
+		return grex.getStartState() == this;
 	}
 
 	public boolean isOutput() {
-		return isOutput;
+		return grex.isOutput(this);
 	}
 	
 	/** to dot graphiz protocol
@@ -69,8 +60,19 @@ public class State {
 	}
 	
 	public Collection<TransitionInstance> getTransitions(){
-		return graph.getOutEdges(this);
+		return grex.getGraph().getOutEdges(this);
 	}
+
+	
+	
+	void setName(String name) {
+		this.name = name;
+	}
+
+	void init(DiezelGrex grex, String name) {
+		this.grex = grex;
+	}
+
 	
 	
 }

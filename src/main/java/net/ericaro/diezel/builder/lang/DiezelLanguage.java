@@ -1,25 +1,23 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.lang;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 import edu.uci.ics.jung.graph.DirectedGraph;
 
-public class DiezelLanguage  implements Compilable{
+public class DiezelLanguage  {
 
 	String header ;
 	String expression; // the regexp defining the workfow
 	String packageName; // global conf: the target package name
 	String guideBaseName = "Guide";
-	List<Generic> rootTypes = new ArrayList<Generic>(); // the root state generics, always usefull to start with
+	// lazy code, this should not be a field but a query to the underlying graph
 	List<Transition> transitions = new ArrayList<Transition>();
-	//List<String> states = new ArrayList<String>();
 
 	// result of compilation
 	transient DirectedGraph<State, TransitionInstance> graph; // graph computed from the expression expression
-	transient State start, end;
+	transient State start;
 	
 	DiezelLanguage() {
 		super();
@@ -45,6 +43,10 @@ public class DiezelLanguage  implements Compilable{
 	}
 
 
+
+	public State getStartState() {
+		return start;
+	}
 
 	public List<Transition> getTransitions() {
 		return transitions;

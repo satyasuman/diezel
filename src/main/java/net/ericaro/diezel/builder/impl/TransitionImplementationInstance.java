@@ -1,24 +1,28 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.impl;
 
 import java.util.Collection;
 
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import net.ericaro.diezel.builder.lang.Generic;
+import net.ericaro.diezel.builder.lang.TransitionInstance;
 
 public class TransitionImplementationInstance {
 
 	TransitionImplementation prototype;
 	TransitionInstance parent;
-	private DirectedSparseMultigraph<StateImplementation, TransitionImplementationInstance> graph;
-	public TransitionImplementationInstance(DirectedSparseMultigraph<StateImplementation, TransitionImplementationInstance> graph, TransitionImplementation prototype, TransitionInstance parent) {
+	private StateImplementation	nextState;
+	public TransitionImplementationInstance(TransitionImplementation prototype, TransitionInstance parent) {
 		super();
 		this.prototype = prototype;
 		this.parent = parent;
-		this.graph  = graph;
 	}
 	public StateImplementation getNextState() {
-		return graph.getDest(this);
+		return nextState;
 	}
+	
 
+	void setNextState(StateImplementation nextState) {
+		this.nextState = nextState;
+	}
 	public String toString(){
 		return getAlias();
 	}

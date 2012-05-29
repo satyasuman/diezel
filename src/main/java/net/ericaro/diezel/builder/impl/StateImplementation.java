@@ -1,8 +1,11 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import net.ericaro.diezel.builder.lang.Generic;
+import net.ericaro.diezel.builder.lang.State;
 import edu.uci.ics.jung.graph.DirectedGraph;
 
 
@@ -16,12 +19,11 @@ public class StateImplementation {
 	
 	State parent;
 	private String name;
-	private DirectedGraph<StateImplementation, TransitionImplementationInstance> graph;
+	private List<TransitionImplementationInstance>	transitions = new ArrayList<TransitionImplementationInstance>(); 
 
-	public StateImplementation(DirectedGraph<StateImplementation, TransitionImplementationInstance> graph, State prototype, String name) {
+	public StateImplementation(State prototype, String name) {
 		super();
 		this.parent = prototype;
-		this.graph = graph;
 		this.name = name;
 	}
 
@@ -49,7 +51,7 @@ public class StateImplementation {
 	}
 
 	public Collection<TransitionImplementationInstance> getTransitions(){
-		return graph.getOutEdges(this);
+		return transitions;
 	}
 	
 	

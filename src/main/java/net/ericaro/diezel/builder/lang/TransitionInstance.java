@@ -1,8 +1,6 @@
-package net.ericaro.diezel.core.builder;
+package net.ericaro.diezel.builder.lang;
 
 import java.util.Collection;
-
-import edu.uci.ics.jung.graph.DirectedGraph;
 
 /** Transitions are instanciated several times among the graph, therefore they are in reality "instances", and this class represent them
  * 
@@ -12,13 +10,17 @@ import edu.uci.ics.jung.graph.DirectedGraph;
 public class TransitionInstance {
 
 	
-	Transition prototype;
-	private DirectedGraph<State, TransitionInstance> graph;
+	private Transition prototype;
+	private DiezelGrex	grex;
 
-	public TransitionInstance(Transition prototype, DirectedGraph<State, TransitionInstance> graph) {
+	public TransitionInstance(Transition prototype) {
 		super();
 		this.prototype = prototype;
-		this.graph = graph;
+	}
+	
+	public TransitionInstance(TransitionInstance clonee) {
+		super();
+		this.prototype = clonee.getTransition(); 
 	}
 
 	public Collection<? extends Generic> getPush() {
@@ -37,7 +39,7 @@ public class TransitionInstance {
 	}
 
 	public State getNextState() {
-		return graph.getDest(this);
+		return grex.getGraph().getDest(this);
 	}
 
 	public String getReturnType() {
@@ -47,12 +49,23 @@ public class TransitionInstance {
 	public String getSignature() {
 		return prototype.getSignature();
 	}
-	
-	
-	public String toString(){
-		StringBuilder sb = new StringBuilder();
-		sb.append(graph.getSource(this).getName()).append(" -> ").append(getNextState().getName() ).append("[label=\"" +getAlias()+":"+getSignature() + "\"]");
-		return sb.toString();
+
+
+
+	public Transition getTransition() {
+		return prototype;
 	}
+
+	void init(DiezelGrex grex) {
+		this.grex = grex;
+		
+	}
+	
+	
+//	public String toString(){
+//		StringBuilder sb = new StringBuilder();
+//		sb.append(graph.getSource(this).getName()).append(" -> ").append(getNextState().getName() ).append("[label=\"" +getAlias()+":"+getSignature() + "\"]");
+//		return sb.toString();
+//	}
 	
 }

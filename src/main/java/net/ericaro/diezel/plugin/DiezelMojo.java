@@ -7,15 +7,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-import net.ericaro.diezel.core.Diezel;
-import net.ericaro.diezel.core.DiezelException;
-import net.ericaro.diezel.core.parser.DiezelParser;
-import net.ericaro.diezel.core.parser.Graph;
+import net.ericaro.diezel.Diezel;
+import net.ericaro.diezel.DiezelException;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
+
+import edu.uci.ics.jung.graph.Graph;
 
 /** generate a Diezel Mojo
  * 
@@ -156,7 +156,6 @@ public class DiezelMojo extends AbstractMojo {
 	 */
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		
-		Graph.DEBUG= debug ;
 		
 		File[] diezels = scanForDiezels();
 		getLog().info("starting Diezel compilation from: " + getSourceDirectory());
@@ -189,7 +188,6 @@ public class DiezelMojo extends AbstractMojo {
 	 *             If the tool reported a non-zero exit code.
 	 */
 	protected void processDiezel(File[] diezel) throws MojoExecutionException, MojoFailureException{
-		DiezelParser p = new DiezelParser();
 			try {
 				//TODO also copy source definition (.xml for languages), into classes, so that it will be possible 
 				// to implement a language defined in another jar.

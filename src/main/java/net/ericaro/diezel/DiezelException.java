@@ -1,4 +1,4 @@
-package net.ericaro.diezel.core;
+package net.ericaro.diezel;
 
 public class DiezelException extends Exception {
 
