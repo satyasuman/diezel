@@ -12,6 +12,11 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
+/** Basic compiler for a single diezel type (interface or implementation)
+ * 
+ * @author eric
+ *
+ */
 public class DiezelCompiler {
 
 	private static STGroup	templates	= new STGroupFile("net/ericaro/diezel/core/builder/Diezel.stg");
@@ -24,7 +29,7 @@ public class DiezelCompiler {
 		// parse the graph from states
 		for (State state : lang.getGraph().getVertices())
 			toDir(targetDirectory, lang.getPackageName(), state.getName() + ".java", compile(lang, state));
-		toDir(targetDirectory, lang.getPackageName(), "guide-graph.dot", lang.toString());
+		//toDir(targetDirectory, lang.getPackageName(), "guide-graph.dot", lang.toString());
 	}
 
 	static String compile(DiezelLanguage lang, State state) {
@@ -52,5 +57,4 @@ public class DiezelCompiler {
 		File d = packageName == null ? dir : new File(dir, packageName.replace('.', '/'));
 		FileUtils.printFile(new File(d, filename), content, true);
 	}
-
 }
