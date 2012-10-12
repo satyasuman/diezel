@@ -12,7 +12,7 @@ import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
 import net.ericaro.diezel.builder.DiezelCompiler;
-import net.ericaro.diezel.builder.FileUtils;
+import net.ericaro.diezel.builder.FileUtil;
 import net.ericaro.diezel.builder.impl.DiezelImplementationBuilder;
 import net.ericaro.diezel.builder.lang.DiezelLanguage;
 import net.ericaro.diezel.builder.lang.DiezelLanguageBuilder;
@@ -70,7 +70,7 @@ public class Diezel {
 	
 	
 	private static Object parse(File source) throws XMLStreamException, FactoryConfigurationError, JAXBException, IOException, DiezelException {
-		Object src = FileUtils.read(source);
+		Object src = FileUtil.read(source);
 		if (src instanceof net.ericaro.diezel._2_0.Diezel)
 			return new DiezelLanguageBuilder((net.ericaro.diezel._2_0.Diezel)src);
 		else if (src instanceof net.ericaro.diezel._2_0.DiezelImplementation)

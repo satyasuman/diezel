@@ -6,12 +6,17 @@ import java.util.List;
 
 import edu.uci.ics.jung.graph.DirectedGraph;
 
+/** Compilation result for a Diezel language file, ready to be generated.
+ * 
+ * @author eric
+ *
+ */
 public class DiezelLanguage  {
 
-	String header ;
-	String expression; // the regexp defining the workfow
-	String packageName; // global conf: the target package name
-	String guideBaseName = "Guide";
+	String header ; // file header
+	String expression; // the regexp defining the workflow
+	String packageName; // target package name
+	String guideBaseName = "Guide"; // defaulted to Guide, but in fact set by the XML
 	// lazy code, this should not be a field but a query to the underlying graph
 	List<Transition> transitions = new ArrayList<Transition>();
 

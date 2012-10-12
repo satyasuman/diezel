@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import net.ericaro.diezel.builder.StringUtils;
-
 /** represent a state in the EDSL, i.e. an interface with methods
  * 
  * @author eric
@@ -29,10 +27,32 @@ public class State {
 		sb.append(name);
 		if (generics!=null && generics.size() > 0 ){
 			sb.append("<");
-			StringUtils.join(",", generics, sb);
+			join(",", generics, sb);
 			sb.append(">");
 		}
 		return sb.toString() ;
+	}
+	
+	/**
+	 * mimics join in python.
+	 * 
+	 * @param delimiter
+	 * @param iterable
+	 * @param builder
+	 * @return
+	 */
+	public static StringBuilder join(String delimiter, Iterable<?> iterable, StringBuilder builder) {
+
+		boolean first = true;
+		for (Object argument : iterable) {
+			if (first)
+				first = false;
+			else
+				builder.append(delimiter);
+			builder.append(argument);
+		}
+		return builder;
+
 	}
 
 	public List<Generic> getGenerics() {

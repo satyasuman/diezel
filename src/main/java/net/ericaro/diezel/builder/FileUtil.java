@@ -21,22 +21,13 @@ import javax.xml.stream.XMLStreamReader;
 import net.ericaro.diezel._2_0.ObjectFactory;
 
 
-public class FileUtils {
-
-	public static void printFile(File file, String content, boolean close)
-			throws IOException {
-		file.getParentFile().mkdirs();
-		//System.out.println("DIEZEL is generating "+file);
-		OutputStreamWriter w = new OutputStreamWriter(
-				new FileOutputStream(file));
-		w.write(content);
-		if (close)
-			w.close();
-	}
+public class FileUtil {
+	
+	
 
 
 	
-	/**
+	/** return the JAXB context associated with this package.
 	 * 
 	 * @param o
 	 * @return
@@ -47,11 +38,10 @@ public class FileUtils {
 	}
 
 	/**
-	 * Read one of the techno objects from a techno XML file.
+	 * Read an XML file and returns the root JAXB Object.
 	 * 
 	 * @param file
-	 *            a techno xml file
-	 * @return
+	 * @return thr root jaxb object
 	 * @throws XMLStreamException
 	 * @throws FactoryConfigurationError
 	 * @throws JAXBException
@@ -62,12 +52,10 @@ public class FileUtils {
 	}
 
 	/**
-	 * Read one of the techno objects from a techno XML file.
-	 * 
+	 * Read an XML file and returns the root JAXB Object.
 	 * 
 	 * 
 	 * @param file
-	 *            a techno File object
 	 * @return
 	 * @throws XMLStreamException
 	 * @throws FactoryConfigurationError
@@ -86,10 +74,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * Read one of the techno objects from a techno XML file inputstream.
+	 * Read an XML inputstream and returns the root JAXB Object.
 	 * 
 	 * @param in
-	 *            inputstream to a techno file content
 	 * @return
 	 * @throws XMLStreamException
 	 * @throws FactoryConfigurationError
@@ -101,11 +88,9 @@ public class FileUtils {
 	}
 
 	/**
-	 * Read one of the techno objects from a techno XML reader. Warning this
-	 * methods closes the reader.
+	 * Read an XML XMLStreamReader and  returns the root JAXB Object.
 	 * 
 	 * @param source
-	 *            an xmlstream reader
 	 * @return
 	 * @throws JAXBException
 	 * @throws XMLStreamException
@@ -115,9 +100,9 @@ public class FileUtils {
 		return u.unmarshal(source);
 	}
 
-	/** Write any of the techno objects into a file
+	/** Write any of the JAXB objects into a file
 	 * 
-	 * @param object one of the techno objects
+	 * @param object one of the JAXB objects
 	 * @param file a file path
 	 * @throws JAXBException
 	 * @throws IOException
@@ -126,9 +111,9 @@ public class FileUtils {
 		write(object, new File(file) );
 	}
 	
-	/** Write any of the techno objects into a file
+	/** Write any of the JAXB objects into a file
 	 * 
-	 * @param object one of the techno objects
+	 * @param object one of the JAXB objects
 	 * @param file a file to write to
 	 * @throws JAXBException
 	 * @throws IOException
@@ -142,9 +127,9 @@ public class FileUtils {
 		}
 	}
 
-	/** Write any of the techno objects into a stream
+	/** Write any of the JAXB objects into a file
 	 * 
-	 * @param object
+	 * @param object one of the JAXB objects
 	 * @param out
 	 * @throws JAXBException
 	 */
@@ -153,12 +138,11 @@ public class FileUtils {
 		m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		m.marshal(object, out);
 	}
-
 	/** 
 	 * @return an URL for the schema location. 
 	 */
 	public static URL getSchemaURL() {
-		return FileUtils.class.getResource("/Diezel.xsd");
+		return FileUtil.class.getResource("/Diezel.xsd");
 	}
 
 
