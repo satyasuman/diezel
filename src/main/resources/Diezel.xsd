@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://diezel.ericaro.net/2.0.0/" xmlns="http://diezel.ericaro.net/2.0.0/"
+	targetNamespace="http://diezel.ericaro.net/2.0.1/" xmlns="http://diezel.ericaro.net/2.0.1/"
 	elementFormDefault="qualified">
 
+<!-- 
+changes:
+2.0.1 : added attribute "resolved" for the generic type.
+ -->
 
 <xs:simpleType name="javaIdentifier">
   <xs:restriction base="xs:string">
@@ -25,13 +29,25 @@
 	<xs:complexType name="generic">
 		<xs:annotation>
 			<xs:documentation source="description">generic defines a generic type ( like "U extends V").
-</xs:documentation>
+			</xs:documentation>
 		</xs:annotation>
 		<xs:attribute name="name" type="javaIdentifier" use="required">
 			<xs:annotation>
 				<xs:documentation source="description">
 					generic type name, usually
 					U or V
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="resolved" type="qname">
+			<xs:annotation>
+				<xs:documentation source="description">
+					This transition does not "compute" this target generic, but fix it. For instance
+					public State&lt;String> named();
+					where some other code might do something like
+					public State&lt;T> named(&lt;T> type);
+					To generate the first one just set resolved="java.lang.String"
+					To generate the last one do not add any options.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -92,7 +108,7 @@ the path, is a dot-separated list of transition's aliases.</xs:documentation>
 										<xs:documentation source="description">
 											the path to the state you want to fix the name.
 											
-											the path is a comma separated list of aliases to reach the state.
+											the path is a dot separated list of aliases to reach the state.
 										</xs:documentation>
 									</xs:annotation>
 								</xs:attribute>
@@ -107,8 +123,8 @@ the path, is a dot-separated list of transition's aliases.</xs:documentation>
 	<xs:element name="transition">
 		<xs:annotation>
 			<xs:documentation source="description">A transition  is a  method call that is used to
-chain methods.
-</xs:documentation>
+				chain methods.
+			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:all>
@@ -121,20 +137,30 @@ chain methods.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="capture" type="generic" minOccurs="0">
+				<xs:element name="captures" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
 							capture a generic type to
 							the next state.
 						</xs:documentation>
 					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="capture" type="generic" minOccurs="1" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
-				<xs:element name="drop" type="generic" minOccurs="0">
+				<xs:element name="drops" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">
 							drop a generic type when moving to the next step.
 						</xs:documentation>
 					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="drop" type="generic"  minOccurs="1" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 				<xs:element name="return" type="xs:string" default="void"
 					minOccurs="0" maxOccurs="1">
@@ -215,7 +241,7 @@ given the state path to it.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="capture" type="generic" minOccurs="0" maxOccurs="1">
+				<xs:element name="captures" minOccurs="0" maxOccurs="1">
 					<xs:annotation>
 						<xs:documentation source="description">add a generic to be captured by this transition, 
 and append it to the next state.
@@ -223,8 +249,13 @@ for instance a call like
 "public &lt;T> State&lt;T> with(class&lt;T> type);"
 
 captures the generic "T".
-</xs:documentation>
+					</xs:documentation>
 					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="capture" type="generic" minOccurs="1" maxOccurs="unbounded"/>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 				<xs:element ref="name" minOccurs="1" maxOccurs="1">
 					<xs:annotation>

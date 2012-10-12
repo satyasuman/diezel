@@ -69,14 +69,8 @@ public class State {
 		return grex.isOutput(this);
 	}
 	
-	/** to dot graphiz protocol
-	 * 
-	 * @return
-	 */
 	public String toString(){
-			StringBuilder sb = new StringBuilder();
-			sb.append(getName()).append("[shape=component,label=\"" + asJavaType() + "\"]");
-			return sb.toString();
+		return getName();
 	}
 	
 	public Collection<TransitionInstance> getTransitions(){
@@ -91,6 +85,7 @@ public class State {
 
 	void init(DiezelGrex grex, String name) {
 		this.grex = grex;
+		this.name = name ;
 	}
 
 	

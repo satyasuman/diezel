@@ -24,8 +24,8 @@ public class DiezelLanguageBuilder {
 	private String		header	= "*   _________________________________\n" + "*   ))                              (( \n" + "*  ((   __    o     ___        _     ))\n" + "*   ))  ))\\   _   __  ))   __  ))   (( \n" + "*  ((  ((_/  ((  ((- ((__ ((- ((     ))\n" + "*   ))        )) ((__     ((__ ))__  (( \n" + "*  ((                                ))\n" + "*   ))______________________________(( \n" + "*        Diezel 2.0.0 Generated.\n*";
 
 	// result of compilation
-	private Diezel		src;
-	private DiezelGrex	grex;
+	private Diezel		src; // jaxb stuff
+	private DiezelGrex	grex; // parsed regular expression
 
 	public DiezelLanguageBuilder(Diezel src) {
 		this.src = src;
@@ -36,16 +36,14 @@ public class DiezelLanguageBuilder {
 						// associated the State and Transition objects
 		buildStates();
 
-		// and copy
+		// and copy, into a compiled version of the file
 		DiezelLanguage that = new DiezelLanguage();
-
+		// the compilation is all about generated those information
 		that.header = this.header;
 		that.expression = src.getExpression();
 		that.packageName = src.getPackage();
 		that.guideBaseName = src.getName();
-		that.transitions = new ArrayList<Transition>(grex.getTransitions());
-		// that.states = Collections.unmodifiableList(this.states );
-		that.graph = Graphs.unmodifiableDirectedGraph(this.grex.getGraph());
+		that.graph = Graphs.unmodifiableDirectedGraph(this.grex.getGraph());// keep track of the grex 
 		that.start = this.grex.getStartState();
 
 		return that;
@@ -76,7 +74,7 @@ public class DiezelLanguageBuilder {
 				}
 			});
 		} catch (net.ericaro.parser.ParseException e) {
-			throw new RuntimeException("failed to generate the Graph for expression " + src.getExpression(), e);
+			throw new RuntimeException("Diezel Compilation Error. Illegal regular expression: " + src.getExpression(), e);
 		}
 	}
 
@@ -91,6 +89,13 @@ public class DiezelLanguageBuilder {
 		tr.setJavadoc(t.getJavadoc());
 		tr.setReturnType(t.getReturn());
 		tr.setSignature(t.getSignature());
+		
+		if (t.getCaptures() !=null) for( net.ericaro.diezel._2_0.Generic g : t.getCaptures().getCapture())
+			tr.addPush(buildGeneric(g) );
+		
+		if (t.getDrops() !=null) for( net.ericaro.diezel._2_0.Generic g : t.getDrops().getDrop()  )
+			tr.addPull(buildGeneric(g) );
+		
 		return tr;
 	}
 
@@ -105,6 +110,7 @@ public class DiezelLanguageBuilder {
 		g.setName(xg.getName());
 		g.setExtends(xg.getExtends());
 		g.setSuper(xg.getSuper());
+		g.setResolvedName(xg.getResolved());
 		return g;
 	}
 
@@ -114,18 +120,20 @@ public class DiezelLanguageBuilder {
 	 * 
 	 */
 	private void buildStates() throws InconsistentTypePathException {
+		
 		DirectedGraph<State, TransitionInstance> graph = grex.getGraph();
 		// passes the grex to transition and states
 		for(TransitionInstance t: graph.getEdges())
-			t.init(grex);
+			t.init(grex); // not that the grex is only used to compute the target of this transition instance.
 		
 		int i = 0;
 		// force a default name for all states
 		for (State s : graph.getVertices())
-			s.init(grex, src.getName() + (++i)); // little trick to rename the states by default
+			s.init(grex, src.getName() + (++i)); // the grex is quite used in there. Nevertheless I might better remove it,and pass what it needs instead
 
-		// the starting point has an actual name
+		// name the starting point after the whole diezel expression
 		grex.getStartState().setName(src.getName());
+		
 		// parses the states declaration to force some names
 		if (src.getStates() != null)
 			for (net.ericaro.diezel._2_0.States.State s : src.getStates().getState()) {
@@ -133,7 +141,7 @@ public class DiezelLanguageBuilder {
 				state.setName(s.getValue());
 			}
 		
-		solveStates() ;// computes the generic states for every states...
+		solveStates() ;// computes the generic for every states...
 	}
 
 
@@ -167,8 +175,8 @@ public class DiezelLanguageBuilder {
 	 */
 	private void solveStates() throws InconsistentTypePathException {
 		// fill the root state with the default states
-		if (src.getCapture() != null)
-			grex.getStartState().generics.add(buildGeneric(src.getCapture()));
+		if (src.getCaptures() !=null) for(net.ericaro.diezel._2_0.Generic gen: src.getCaptures().getCapture() )
+			grex.getStartState().generics.add(buildGeneric(gen));
 
 		// compute every state generics
 		Set<State> knownStates = new HashSet<State>();

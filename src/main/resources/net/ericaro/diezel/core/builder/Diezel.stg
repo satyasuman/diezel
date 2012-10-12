@@ -31,10 +31,11 @@ public class <lang.startState.name><genericDefinition(lang.startState.generics)>
 //<! END OF Entry point, now calls are internal stuff !>
 
 transitionDefinition(transition, lang)::= <<
+
 /**
 <transition.javadoc>
 **/
-public <genericDefinition(transition.push)><if(transition.nextState.output)> <transition.returnType><else> <stateUsage(transition.nextState)><endif> <transition.signature>
+public <genericDefinition(transition.unresolved)><if(transition.nextState.output)> <transition.returnType><else> <stateUsage(transition.nextState)><endif> <transition.signature>
 >>
 
 stateDefinition(state) ::= "<state.name><genericDefinition(state.generics)>"
@@ -42,11 +43,12 @@ stateUsage(state) ::= "<state.name><genericUsage(state.generics)>"
 
 //<! generic definition differs from usage by the declaration of super or extends !>
 genericDefinition(generics) ::="<if(first(generics) )>\<<generics:singleGenericDefinition();separator=\", \">><endif>"
+genericDefinition(generics) ::="<if(first(generics) )>\<<generics:singleGenericDefinition();separator=\", \">><endif>"
 singleGenericDefinition(generic)::= "<generic.name><if (generic.extends)> extends <generic.extends><elseif(generic.superType)>super <generic.superType><endif>"
 
 //<! simple <U,V> like stuff or empty!> 
 genericUsage(generics) ::="<if(first(generics) )> \<<generics:singleGenericUsage();separator=\", \">> <endif> "
-singleGenericUsage(generic)::= "<generic.name>"
+singleGenericUsage(generic)::= "<if(generic.resolved)><generic.resolvedName><else><generic.name><endif>"
 
 importJava(state, lang) ::= <<
 <if (!state.output)>

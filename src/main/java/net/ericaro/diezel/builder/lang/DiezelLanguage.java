@@ -17,13 +17,14 @@ public class DiezelLanguage  {
 	String expression; // the regexp defining the workflow
 	String packageName; // target package name
 	String guideBaseName = "Guide"; // defaulted to Guide, but in fact set by the XML
-	// lazy code, this should not be a field but a query to the underlying graph
-	List<Transition> transitions = new ArrayList<Transition>();
 
 	// result of compilation
-	transient DirectedGraph<State, TransitionInstance> graph; // graph computed from the expression expression
+	transient DirectedGraph<State, TransitionInstance> graph; // graph computed from the regexp expression
 	transient State start;
 	
+	/** Should only be created using the Builder
+	 * 
+	 */
 	DiezelLanguage() {
 		super();
 	}
@@ -53,9 +54,6 @@ public class DiezelLanguage  {
 		return start;
 	}
 
-	public List<Transition> getTransitions() {
-		return transitions;
-	}
 	public Collection<State> getStates(){
 		return graph.getVertices();
 	}

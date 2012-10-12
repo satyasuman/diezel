@@ -10,7 +10,7 @@ import net.ericaro.neogrex.Grex;
 
 
 /** Diezel implementation of a grex. A Grex is a graph associated with a regular expression.
- * It handles transition, state relations. It should as far as possible hide the underlying graph object.
+ * It handles transition-state relations. It should as far as possible hide the underlying graph object.
  * 
  * @author eric
  *
