@@ -1,0 +1,55 @@
+import "Common.stg"
+// main entry point from the compiler !
+
+FileUnit(lang) ::= <<
+/*
+<lang.header> 
+*/
+package <lang.packageName> ;
+<!generates the start as the top level class, all other states as inner classes !>
+<lang.parent.states:importJava(lang.parent)>
+
+public class <lang.startState.name><genericDefinition(lang.startState.generics)><if(lang.extends)> extends <lang.extends> <endif> implements <stateUsage(lang.startState.parent)>{
+    <lang.startState.transitions:implementationTransition(lang)>
+    <lang.states:implementationStateUnit(lang)>
+}
+>>
+
+implementationStateUnit(state,lang)::= <<
+<if (!state.output)><if (! state.input ) >
+/**
+*/
+public class <state.name><genericDefinition(state.generics)> implements <stateUsage(state.parent)> {
+    <state.transitions:implementationTransition(lang)>
+}
+<endif><endif>
+>>
+
+
+implementationTransition(transition, lang) ::= <<
+
+/**
+<transition.javadoc>
+**/
+public <genericDefinition(transition.parent.unresolved)><if(transition.nextState.output)> <transition.returnType><else> <stateResolved(transition.nextState)><endif> <transition.signature> {
+	<transition.body>
+	<if(!transition.nextState.output)>
+	return <stateConstructor(transition.nextState)>;
+<endif>
+}
+>>
+
+stateConstructor(state) ::= "new <stateResolved(state)>()"
+
+
+stateResolved(state) ::= << <state.name><if(first(state.generics) )>\<<state.generics:singleGenericResolved();separator=", "> ><endif> >>
+singleGenericResolved(generic)::= "<if(generic.resolved)><generic.resolvedName><else><generic.name><endif>"
+
+
+importJava(state, lang) ::= <<
+<if (!state.output)>
+import <lang.packageName>.<state.name> ;
+<endif>
+>>
+
+

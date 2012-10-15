@@ -36,12 +36,25 @@ public class Diezel {
 			Map<String, DiezelLanguage> languages = new HashMap<String, DiezelLanguage>();
 			List<DiezelImplementationBuilder> others = new ArrayList<DiezelImplementationBuilder>();
 			for(File src : sources){
-				Object gen = parse(src);
+				
+				Object gen;
+				try {
+					gen = parse(src);
+				} catch (Exception e) {
+					throw new DiezelException("Diezel-Error: Wrong XML file format in "+src+"\nCaused by\n"+e.getMessage(), e);
+				}
+				
 				// quicky build lang first
 				if (gen instanceof DiezelLanguageBuilder){
 					DiezelLanguageBuilder db = (DiezelLanguageBuilder) gen;
 					String name = db.getQualifiedName();
-					languages.put(name, db.build());
+					
+					try {
+						languages.put(name, db.build());
+					} catch (Exception e) {
+						throw new DiezelException("Diezel-Error: XML Compilation Error in "+name+"\nCaused by\n"+e.getMessage(), e);
+					}
+					
 				}
 				else
 					others.add((DiezelImplementationBuilder) gen);

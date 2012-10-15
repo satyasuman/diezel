@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.logging.Logger;
 
 import net.ericaro.diezel.builder.impl.DiezelImplementation;
 import net.ericaro.diezel.builder.lang.DiezelLanguage;
@@ -23,7 +24,12 @@ import org.stringtemplate.v4.STGroupFile;
  */
 public class DiezelCompiler {
 
-	private static STGroup	templates	= new STGroupFile("net/ericaro/diezel/core/builder/Diezel.stg");
+	
+	private static Logger LOG = Logger.getLogger(DiezelCompiler.class.getName());
+	
+	private static STGroup	languageTemplate	= new STGroupFile("net/ericaro/diezel/core/builder/DiezelLang.stg");
+	private static STGroup	implementationTemplate = new STGroupFile("net/ericaro/diezel/core/builder/DiezelImpl.stg");
+	
 	
 	/** Generates a {@link DiezelImplementation} into the target directory. It takes care of everything
 	 * 
@@ -51,7 +57,7 @@ public class DiezelCompiler {
 	 */
 	static String compile(DiezelLanguage lang, State state) {
 
-		ST compileUnit = templates.getInstanceOf("languageStateUnit");
+		ST compileUnit = languageTemplate.getInstanceOf("FileUnit");
 		compileUnit.add("state", state);
 		compileUnit.add("lang", lang);
 		String result = compileUnit.render();
@@ -66,12 +72,12 @@ public class DiezelCompiler {
 	 * @return
 	 */
 	static String compile(DiezelImplementation lang) {
-
-		ST compileUnit = templates.getInstanceOf("implementationUnit");
+		ST compileUnit = implementationTemplate.getInstanceOf("FileUnit");
 		compileUnit.add("lang", lang);
 		String result = compileUnit.render();
 		return result;
 	}
+	
 	
 	/** Utility to generate a java file into its target directory, in particular it handles the packages.
 	 * 

@@ -1,0 +1,19 @@
+import "Common.stg"
+
+// main entry point from the compiler !
+//there have been too much code shared between interface and impl
+
+FileUnit(state,lang) ::= <<
+/*
+<lang.header>
+*/
+package <lang.packageName> ;
+/**
+*
+*/
+public interface <state.name><genericDefinition(state.generics)> {
+    <state.transitions:interfaceTransition(lang)>
+}
+>>
+
+interfaceTransition(transition, lang)::= "<transitionDefinition(transition,lang)> ;"

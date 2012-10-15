@@ -12,7 +12,7 @@ import org.stringtemplate.v4.ST;
 public class DiezelGeneratorTest extends TestCase {
 
 	
-	public void testSimple() throws DiezelException, IOException{
+	public void atestSimple() throws DiezelException, IOException{
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/generated-sources/test/");
 		File src = new File("./src/test/resources/");
@@ -20,14 +20,14 @@ public class DiezelGeneratorTest extends TestCase {
 		//Graph.dot(new File(target, "net/ericaro/diezel/xml/guide-graph").getPath());
 	}
 	
-	public void testIssue12p() throws DiezelException, IOException{
+	public void atestIssue12p() throws DiezelException, IOException{
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/issue12p/");
 		File src = new File("./src/test/resources/");
 		//Graph.DEBUG = true;
 		Diezel.generate(target, new File(src, "issue12p.xml"));
 	}
-	public void testIssue10() throws DiezelException, IOException{
+	public void atestIssue10() throws DiezelException, IOException{
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/issue10/");
 		File src = new File("./src/test/resources/");
@@ -35,7 +35,7 @@ public class DiezelGeneratorTest extends TestCase {
 		// the file is ok, there should be not exeception
 	}
 	
-	public void testGeneric() throws DiezelException, IOException{
+	public void atestGeneric() throws DiezelException, IOException{
 		//Diezel.generate(, new File("./target/"));
 		File target = new File("./target/issueGeneric/");
 		File src = new File("./src/test/resources/");

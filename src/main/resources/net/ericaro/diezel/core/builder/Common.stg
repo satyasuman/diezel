@@ -1,0 +1,18 @@
+
+transitionDefinition(transition, lang)::= <<
+
+/**
+<transition.javadoc>
+**/
+public <genericDefinition(transition.push)><if(transition.nextState.output)> <transition.returnType><else> <stateUsage(transition.nextState)><endif> <transition.signature> 
+>>
+
+stateUsage(state) ::= "<state.name><genericUsage(state.generics)>"
+genericUsage(generics) ::="<if(first(generics) )> \<<generics:singleGenericUsage();separator=\", \">> <endif> "
+singleGenericUsage(generic)::= "<generic.name>"
+
+//<! generic definition differs from usage by the declaration of super or extends !>
+genericDefinition(generics) ::="<if(first(generics) )>\<<generics:singleGenericDefinition();separator=\", \">><endif>"
+singleGenericDefinition(generic)::= "<generic.name><if (generic.extends)> extends <generic.extends><elseif(generic.superType)>super <generic.superType><endif>"
+
+gen(names) ::= "<if(first(names) )>\<<names:{name | <name> };separator=\", \">><endif>"
